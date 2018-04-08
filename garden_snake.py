@@ -8,23 +8,39 @@
 from network import WLAN, STA_IF
 from machine import ADC, Pin
 from dht import DHT22
-from urequests import post
+from mqtt_client import MQTTClient
+from time import sleep
+import json
+import ujson as json
 
-# Config
-MIN_MOISTURE = 404
-MAX_MOISTURE = 776
-DIFF_MOISTURE = MAX_MOISTURE - MIN_MOISTURE
-DATA_URL = 'http://server/node/1/data'
-
-MOISTURE_PIN_NUM = 0
-TEMP_HUMID_PIN_NUM = 4
 
 # Globals
-moisture_pin = None
-temp_humid_pin = None
+# ======================| START |======================|
+CONFIG_PATH = '/config.json'
+# ======================| END |======================|
 
+def load_config(path):
+    config = None
 
-def do_connect(name, passwd):
+    try:
+        with open(path) as f:
+            config = json.loads(f.read())
+    except (OSError, ValueError):
+        print("Could not load " + path)
+
+    diff = config['sensors']['max_moisture'] - config['sensors']['min_moisture']
+    config['sensors']['diff_moisture'] = diff
+
+    return config
+
+def save_config(config, path):
+    try:
+        with open(path, "w") as f:
+            f.write(json.dumps(config))
+    except OSError:
+        print("Couldn't save " + path)
+
+def connect_wifi(name, passwd):
     wlan = WLAN(STA_IF)
     wlan.active(True)
 
@@ -37,37 +53,99 @@ def do_connect(name, passwd):
 
     print('Connected with config:', wlan.ifconfig())
 
-def setup():
-    moisture_pin = ADC(MOISTURE_PIN_NUM)
-    temp_humid_pin = DHT22(Pin(TEMP_HUMID_PIN_NUM))
+def mqtt_connect(name, ip):
+    client = MQTTClient(name, ip)
+    client.connect()
 
-def get_moisture_data():
+    return client
+
+def setup(moisture_pin_num, temp_humid_pin_num):
+    moisture_pin = ADC(moisture_pin_num)
+    temp_humid_pin = DHT22(Pin(temp_humid_pin_num))
+
+    return (moisture_pin, temp_humid_pin)
+
+def get_moisture_data(moisture_pin, min_reading, reading_range):
+    
     moisture_reading = moisture_pin.read()
-    pct_wet = ((moisture_reading - MIN_MOISTURE) / DIFF_MOISTURE) * 100
+    pct_dry = ((moisture_reading - min_reading) / reading_range) * 100
 
-    return pct_wet
+    return pct_dry
 
-def get_temp_humid_data():
+def get_temp_humid_data(temp_humid_pin):
     temp_humid_pin.measure()
-    temp = temp_humid_pin.temperature() # eg. 23 (°C)
+    temp_c = temp_humid_pin.temperature() # eg. 23 (°C)
+    temp_f = temp_c * 1.8 + 32 
     humid = temp_humid_pin.humidity()    # eg. 41 (% RH)
 
-    return (temp, humid)
+    return (temp_f, humid)
 
-def create_msg(pct_wet, temp, humid):
+def create_msg(id, pct_dry, temp, humid):
     msg = {}
-    msg['percent_wet'] = pct_wet
+    msg['id'] = id
+    msg['percent_dry'] = pct_dry
     msg['temperature'] = temp
     msg['humid'] = humid
+    msg_bytes = bytes(str(msg), 'utf-8')
 
-    return msg
+    return msg_bytes
+
+def setup(config):
+    # wifi
+    name = config['board']['moisture_pin_num']
+    passwd = config['board']['moisture_pin_num']
+    connect_wifi(name, passwd)
+
+    # sensors
+    moisture_pin = ADC(config['board']['moisture_pin_num'])
+    pin = Pin(config['board']['temp_humid_pin_num'])
+    temp_humid_pin = DHT22(pin)
+
+    return (moisture_pin, temp_humid_pin)
+
+def run(config, moisture_pin, temp_humid_pin):
+    client = None
+
+    try:
+        # moisture sensor
+        min_reading = config['sensors']['min_moisture']
+        reading_range = config['sensors']['diff_moisture']
+        pct_dry = get_moisture_data(moisture_pin, min_reading, reading_range)
+
+        # temp/humid sensor
+        temp, humid = get_temp_humid_data(temp_humid_pin)
+
+        # mqtt
+        id = config['mqtt']['id']
+        ip = config['mqtt']['ip']
+        msg = create_msg(id, pct_dry, temp, humid)
+        # client = mqtt_connect(id, ip)
+        # data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
+        # cmd_topic = bytes(config['mqtt']['cmd_topic'], 'utf-8')
+        # client.publish(data_topic, msg)
+        print(msg)
+    except OSError:
+        print('Reading error')
+
+    if client:
+        client.disconnect()
 
 def main():
-    setup()
+    config = load_config(CONFIG_PATH)
 
-    pct_wet = get_moisture_data()
-    temp, humid = get_temp_humid_data()
-    msg = create_msg(pct_wet, temp, humid)
+    if config:
+        moisture_pin, temp_humid_pin = setup(config)
 
-    response = post(DATA_URL, json=msg)
-    return_msg = response.json()
+        # debug
+        i = 0
+
+        while True:
+            run(config, moisture_pin, temp_humid_pin)
+            sleep(config['runtime']['sleep_time_sec'])
+
+            # debug
+            i += 1
+            if i > 5:
+                break
+
+    

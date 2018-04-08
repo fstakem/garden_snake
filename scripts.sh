@@ -17,4 +17,10 @@ sudo ~/envs/upy_env/bin/esptool.py --port /dev/ttyUSB0 erase_flash
 sudo ~/envs/upy_env/bin/esptool.py --chip esp32 -p /dev/ttyUSB0 write_flash -z 0x1000 <firmmware_path>
 sudo ~/envs/upy_env/bin/esptool.py --chip esp8266 --p /dev/ttyUSB0 write_flash --flash_size=detect 0 <firmmware_path>
 
+# In rshell
+ls /pyboard
 
+# Start mosquitto
+sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm eclipse-mosquitto
+sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm --restart always eclipse-mosquitto
+sudo docker inspect mqtt_broker_box | grep IPAddress

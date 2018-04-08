@@ -1,0 +1,23 @@
+{
+    "wifi": {
+        "name": "",
+        "password": ""
+    },
+    "sensors": {
+        "min_moisture": 400,
+        "max_moisture": 778
+    },
+    "mqtt": {
+        "id": "garden_1",
+        "ip": "",
+        "data_topic": "garden/data",
+        "cmd_topic": "garden/cmd"
+    },
+    "board": {
+        "moisture_pin_num": 0,
+        "temp_humid_pin_num": 5
+    },
+    "runtime": {
+        "sleep_time_sec": 3
+    }
+}
