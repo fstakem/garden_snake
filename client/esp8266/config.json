@@ -8,10 +8,12 @@
         "max_moisture": 778
     },
     "mqtt": {
+        "enabled": false,
         "id": "garden_1",
         "ip": "",
         "data_topic": "garden/data",
-        "cmd_topic": "garden/cmd"
+        "cmd_topic": "garden/cmd",
+        "wait_time_sec": 30
     },
     "board": {
         "moisture_pin_num": 0,

@@ -8,16 +8,17 @@
 from network import WLAN, STA_IF
 from machine import ADC, Pin
 from dht import DHT22
-from mqtt_client import MQTTClient
+from mqtt_client import MQTTClient, MQTTException
 from time import sleep
-import json
 import ujson as json
 
 
 # Globals
 # ======================| START |======================|
 CONFIG_PATH = '/config.json'
+CMD_MSG_RCVD = False
 # ======================| END |======================|
+
 
 def load_config(path):
     config = None
@@ -30,6 +31,9 @@ def load_config(path):
 
     diff = config['sensors']['max_moisture'] - config['sensors']['min_moisture']
     config['sensors']['diff_moisture'] = diff
+
+    if config:
+        save_config(config, path)
 
     return config
 
@@ -90,6 +94,10 @@ def create_msg(id, pct_dry, temp, humid):
 
     return msg_bytes
 
+def handle_msg(topic, msg):
+    CMD_MSG_RCVD = False
+    print(topic, msg)
+
 def setup(config):
     # wifi
     name = config['board']['moisture_pin_num']
@@ -104,6 +112,7 @@ def setup(config):
     return (moisture_pin, temp_humid_pin)
 
 def run(config, moisture_pin, temp_humid_pin):
+    mqtt_enabled = config['mqtt']['enabled']
     client = None
 
     try:
@@ -117,15 +126,37 @@ def run(config, moisture_pin, temp_humid_pin):
 
         # mqtt
         id = config['mqtt']['id']
-        ip = config['mqtt']['ip']
+        
         msg = create_msg(id, pct_dry, temp, humid)
-        # client = mqtt_connect(id, ip)
-        # data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
-        # cmd_topic = bytes(config['mqtt']['cmd_topic'], 'utf-8')
-        # client.publish(data_topic, msg)
         print(msg)
+
+        if mqtt_enabled:
+            print('Publishing...')
+            ip = config['mqtt']['ip']
+            data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
+            cmd_topic = bytes(config['mqtt']['cmd_topic'], 'utf-8')
+            wait_time_sec = config['mqtt']['wait_time_sec']
+
+            client = mqtt_connect(id, ip)
+            client.set_callback(handle_msg)
+            client.subscribe(cmd_topic)
+            client.publish(data_topic, msg)
+
+            seconds_waited = 0
+            CMD_MSG_RCVD = False
+
+            while seconds_waited < wait_time_sec:
+                client.check_msg()
+
+                if CMD_MSG_RCVD:
+                    break
+
+                sleep(1)
+        
     except OSError:
         print('Reading error')
+    except MQTTException:
+        print('Mqtt error')
 
     if client:
         client.disconnect()
