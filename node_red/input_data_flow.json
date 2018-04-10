@@ -1,0 +1,54 @@
+[
+  {
+    "id": "27e867e3.21c6c8",
+    "type": "mqtt in",
+    "z": "6c819811.7174e8",
+    "name": "garden_data",
+    "topic": "garden\/data",
+    "qos": "2",
+    "broker": "bd40652d.2d3778",
+    "x": 140,
+    "y": 180,
+    "wires": [
+      [
+        "8e41fd68.ec08a"
+      ]
+    ]
+  },
+  {
+    "id": "8e41fd68.ec08a",
+    "type": "debug",
+    "z": "6c819811.7174e8",
+    "name": "garden_data_debug",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "x": 370,
+    "y": 320,
+    "wires": [
+      
+    ]
+  },
+  {
+    "id": "bd40652d.2d3778",
+    "type": "mqtt-broker",
+    "z": "",
+    "name": "garden_broker",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "",
+    "usetls": false,
+    "compatmode": true,
+    "keepalive": "60",
+    "cleansession": true,
+    "willTopic": "",
+    "willQos": "0",
+    "willPayload": "",
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthPayload": ""
+  }
+]
+

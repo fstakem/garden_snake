@@ -24,3 +24,11 @@ ls /pyboard
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm eclipse-mosquitto
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm --restart always eclipse-mosquitto
 sudo docker inspect mqtt_broker_box | grep IPAddress
+
+# Pi mosquitto
+sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm mosquitto
+sudo docker run -ti -p 1883:1883 -p 9001:9001 \
+-v /srv/mqtt/config:/mqtt/config:ro \
+-v /srv/mqtt/log:/mqtt/log \
+-v /srv/mqtt/data/:/mqtt/data/ \
+--name mqtt_broker_box --rm mosquitto mosquitto 

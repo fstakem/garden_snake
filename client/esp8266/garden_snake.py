@@ -9,7 +9,7 @@ from network import WLAN, STA_IF
 from machine import ADC, Pin
 from dht import DHT22
 from mqtt_client import MQTTClient, MQTTException
-from time import sleep
+from time import sleep, time
 import ujson as json
 
 
@@ -142,10 +142,18 @@ def run(config, moisture_pin, temp_humid_pin):
             client.subscribe(cmd_topic)
             client.publish(data_topic, msg)
 
+            start_time = time()
             seconds_waited = 0
             CMD_MSG_RCVD = False
 
-            while seconds_waited < wait_time_sec:
+            while True:
+                current_time = time()
+                seconds_waited = current_time - start_time
+
+                if seconds_waited > wait_time_sec or wait_time_sec == 0:
+                    break
+                    
+                print('Looking for command msg')
                 client.check_msg()
 
                 if CMD_MSG_RCVD:
