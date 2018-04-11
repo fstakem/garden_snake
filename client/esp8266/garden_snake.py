@@ -9,8 +9,9 @@ from network import WLAN, STA_IF
 from machine import ADC, Pin
 from dht import DHT22
 from mqtt_client import MQTTClient, MQTTException
-from time import sleep, time
+from time import sleep, time, localtime
 import ujson as json
+import ntptime
 
 
 # Globals
@@ -84,12 +85,23 @@ def get_temp_humid_data(temp_humid_pin):
 
     return (temp_f, humid)
 
+def get_timestamp(update=False):
+    if update:
+        ntptime.settime()
+
+    ts = localtime()
+    timestamp_str = '{}-{}-{}T{}:{}:{}Z'.format(ts[0], ts[1], ts[2], ts[3], ts[4], ts[5])
+
+    #2018-04-11T13:22:39+00:00
+    return timestamp_str
+
 def create_msg(id, pct_dry, temp, humid):
     msg = {}
     msg['id'] = id
+    msg['timestamp'] = get_timestamp(True)
     msg['percent_dry'] = pct_dry
     msg['temperature'] = temp
-    msg['humid'] = humid
+    msg['humidity'] = humid
     msg_bytes = bytes(str(msg), 'utf-8')
 
     return msg_bytes
@@ -174,13 +186,19 @@ def main():
 
     if config:
         moisture_pin, temp_humid_pin = setup(config)
+        sleep_time = config['runtime']['sleep_time_sec']
 
         # debug
         i = 0
 
         while True:
+            start_time = time()
             run(config, moisture_pin, temp_humid_pin)
-            sleep(config['runtime']['sleep_time_sec'])
+            elapsed_time = time() - start_time
+
+            if elapsed_time < sleep_time:
+                new_sleep_time = sleep_time - elapsed_time
+                sleep(new_sleep_time)
 
             # debug
             i += 1
