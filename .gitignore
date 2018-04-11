@@ -70,3 +70,4 @@ target/
 # virtualenv
 env/
 garden_env/
+edge_agent/edge_agent_env/

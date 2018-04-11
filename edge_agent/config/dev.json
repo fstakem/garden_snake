@@ -1,0 +1,7 @@
+{
+    "app_name": "edge_agent",
+    "version": "0.0.1",
+    "db_user": "pi",
+    "db_host": "localhost",
+    "db_name": "iot_data",
+}

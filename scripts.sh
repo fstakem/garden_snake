@@ -26,9 +26,26 @@ sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm --restart
 sudo docker inspect mqtt_broker_box | grep IPAddress
 
 # Pi mosquitto
+git clone https://github.com/pascaldevink/rpi-mosquitto
+sudo docker build --tag mosquitto .
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm mosquitto
 sudo docker run -ti -p 1883:1883 -p 9001:9001 \
 -v /srv/mqtt/config:/mqtt/config:ro \
 -v /srv/mqtt/log:/mqtt/log \
 -v /srv/mqtt/data/:/mqtt/data/ \
 --name mqtt_broker_box --rm mosquitto mosquitto 
+
+# Pi postgres
+# https://opensource.com/article/17/10/set-postgres-database-your-raspberry-pi
+sudo apt install postgresql libpq-dev postgresql-client postgresql-client-common -y
+sudo su postgres
+createuser pi -P --interactive
+    pw: iotwin
+    n
+    y
+    y
+db: iot_data
+
+# Postgres for testing
+sudo docker pull postgres:latest
+sudo docker run -it -h postgres --name test-postgres --rm -e POSTGRES_PASSWORD=iotwin -d postgres
