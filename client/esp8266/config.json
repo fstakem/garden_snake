@@ -9,7 +9,7 @@
     },
     "mqtt": {
         "enabled": true,
-        "id": "garden_1",
+        "tag": "garden",
         "ip": "192.168.2.118",
         "data_topic": "garden/data",
         "cmd_topic": "garden/cmd",

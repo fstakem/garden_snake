@@ -6,7 +6,8 @@
 # 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16
 
 from network import WLAN, STA_IF
-from machine import ADC, Pin
+from machine import ADC, Pin, freq
+from ubinascii import hexlify
 from dht import DHT22
 from mqtt_client import MQTTClient, MQTTException
 from time import sleep, time, localtime
@@ -57,6 +58,11 @@ def connect_wifi(name, passwd):
             pass
 
     print('Connected with config:', wlan.ifconfig())
+
+def get_mac():
+    mac = hexlify(WLAN().config('mac'),':').decode()
+    
+    return mac
 
 def mqtt_connect(name, ip):
     client = MQTTClient(name, ip)
@@ -123,7 +129,7 @@ def setup(config):
 
     return (moisture_pin, temp_humid_pin)
 
-def run(config, moisture_pin, temp_humid_pin):
+def run(config, unique_id, moisture_pin, temp_humid_pin):
     mqtt_enabled = config['mqtt']['enabled']
     client = None
 
@@ -137,7 +143,8 @@ def run(config, moisture_pin, temp_humid_pin):
         temp, humid = get_temp_humid_data(temp_humid_pin)
 
         # mqtt
-        id = config['mqtt']['id']
+        tag = config['mqtt']['tag']
+        id = '{}__{}'.format(tag, unique_id)
         
         msg = create_msg(id, pct_dry, temp, humid)
         print(msg)
@@ -183,6 +190,7 @@ def run(config, moisture_pin, temp_humid_pin):
 
 def main():
     config = load_config(CONFIG_PATH)
+    unique_id = get_mac()
 
     if config:
         moisture_pin, temp_humid_pin = setup(config)
@@ -193,7 +201,7 @@ def main():
 
         while True:
             start_time = time()
-            run(config, moisture_pin, temp_humid_pin)
+            run(config, unique_id, moisture_pin, temp_humid_pin)
             elapsed_time = time() - start_time
 
             if elapsed_time < sleep_time:
