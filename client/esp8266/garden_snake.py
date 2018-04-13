@@ -5,7 +5,8 @@
 # Available GPIO
 # 0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16
 
-from network import WLAN, STA_IF
+import network
+import machine
 from machine import ADC, Pin, freq
 from ubinascii import hexlify
 from dht import DHT22
@@ -47,20 +48,27 @@ def save_config(config, path):
         print("Couldn't save " + path)
 
 def connect_wifi(name, passwd):
-    wlan = WLAN(STA_IF)
-    wlan.active(True)
+    sta_if = network.WLAN(network.STA_IF)
+    ap_if = network.WLAN(network.AP_IF)
+    sta_if.active(True)
+    ap_if.active(False)
 
-    if not wlan.isconnected():
+    if not sta_if.isconnected():
         print('Connecting to network...')
-        wlan.connect(name, passwd)
 
-        while not wlan.isconnected():
+        if name and passwd:
+            sta_if.connect(name, passwd)
+        else:
+            print('Using known network...')
+            sleep(2)
+
+        while not sta_if.isconnected():
             pass
 
-    print('Connected with config:', wlan.ifconfig())
+    print('Connected with config:', sta_if.ifconfig())
 
 def get_mac():
-    mac = hexlify(WLAN().config('mac'),':').decode()
+    mac = hexlify(network.WLAN().config('mac'),':').decode()
     
     return mac
 
@@ -189,28 +197,35 @@ def run(config, unique_id, moisture_pin, temp_humid_pin):
         client.disconnect()
 
 def main():
+    if machine.reset_cause() == machine.DEEPSLEEP_RESET:
+        print('Woke from a deep sleep...')
+
     config = load_config(CONFIG_PATH)
+    debug = config['runtime']['debug']
     unique_id = get_mac()
 
     if config:
         moisture_pin, temp_humid_pin = setup(config)
         sleep_time = config['runtime']['sleep_time_sec']
 
-        # debug
-        i = 0
-
         while True:
             start_time = time()
             run(config, unique_id, moisture_pin, temp_humid_pin)
             elapsed_time = time() - start_time
+            new_sleep_time = sleep_time - elapsed_time
 
-            if elapsed_time < sleep_time:
-                new_sleep_time = sleep_time - elapsed_time
-                sleep(new_sleep_time)
+            if debug:
+                print('Debug...')
+                if elapsed_time < sleep_time:
+                    sleep(new_sleep_time)     
+            else:
+                rtc = machine.RTC()
+                rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
+                sleep_time_ms = 1000 * new_sleep_time
+                rtc.alarm(rtc.ALARM0, sleep_time_ms)
+                machine.deepsleep()
 
-            # debug
-            i += 1
-            if i > 5:
-                break
+                   
+
 
     

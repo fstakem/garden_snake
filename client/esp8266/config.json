@@ -20,6 +20,7 @@
         "temp_humid_pin_num": 5
     },
     "runtime": {
-        "sleep_time_sec": 3
+        "debug": true,
+        "sleep_time_sec": 5
     }
 }
