@@ -21,15 +21,15 @@ version_value = '0_1_0'
 version_name = 'app_v' + version_value
 
 app_v0_1_0 = Blueprint(version_name, version_name, 
-    static_folder='personable/api/version_0_0_1/static', 
+    static_folder='edge_agent/api/version_0_0_1/static', 
     static_url_path='',
-    template_folder='personable/api/version_0_0_1/templates')
+    template_folder='edge_agent/api/version_0_0_1/templates')
 
 
 # Web routes
 @app_v0_1_0.route('/')
 def version_hello():
-    return 'v0.0.1'
+    return 'v{}'.format(version_value)
 
 @app_v0_1_0.route('/index')
 def index():

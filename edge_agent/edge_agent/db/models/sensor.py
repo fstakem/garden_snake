@@ -1,12 +1,32 @@
+# -----------------------------------------------------------------------------------------------
+#
+#       Company:    Personal Research
+#       By:         Fredrick Stakem
+#       Created:    4.17.18   
+#
+# -----------------------------------------------------------------------------------------------
+
+
 # Libraries
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Date, Numeric
 
-from micro_service.db.models.api import Base
-from micro_service.db.models.base_model import BaseModel
+from .db.models.base_model import BaseModel
+from .database import sql_db as db
 
-class Sensor(Base):
+
+class Sensor(BaseModel):
+    
+    # Properties
+    id = db.Column(db.Integer, Sequence('sensor_id_seq'), primary_key=True)
+    name = Column(String(50))
+
+    # Constraints
+    # TODO
+
+    # Relationships
+    # TODO
+
     __tablename__ = 'sensors'
 
-    id = Column(Integer, Sequence('sensor_id_seq'), primary_key=True)
-    name = Column(String(50))
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

@@ -13,15 +13,15 @@ import logging
 
 from flask import request, url_for, jsonify, Flask
 
-from .db import db
-from .api.config import load_config
-from .api.v_0_1_0.controllers.main import app_v0_1_0
+from .database import sql_db
+from .config.config import load_config
+from .api.version_0_1_0.controllers.main import app_v0_1_0
 
 
 # Framework globals
 # -----------------------------------------------------
 flask_app = None
-current_app = app_v0_0_1
+current_app = app_v0_1_0
 
 
 # Config
@@ -41,7 +41,7 @@ flask_app.config['DB_NAME']                         = app_config['db_name']
 flask_app.register_blueprint(current_app)
 
 # Init DB
-acl_db.init_app(flask_app)
+sql_db.init_app(flask_app)
 
 
 # App code

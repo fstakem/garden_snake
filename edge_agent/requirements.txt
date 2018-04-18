@@ -1,5 +1,11 @@
+ipython
+ipdb
+pytest
+
 sqlalchemy
+SQLAlchemy-Utils
 alembic
 flask
-flask_restful
-pytest
+Flask-SQLAlchemy
+Flask-RESTful
+Flask-WTF
