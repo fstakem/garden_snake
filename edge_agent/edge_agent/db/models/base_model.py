@@ -18,8 +18,8 @@ from .database import sql_db as db
 
 class BaseModel(db.Model):
     
-    created_at          = db.Column(db.DateTime, default=datetime.now)
-    updated_at          = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     __abstract__ = True
 

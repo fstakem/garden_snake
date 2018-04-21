@@ -2,7 +2,7 @@
 #
 #       Company:    Personal Research
 #       By:         Fredrick Stakem
-#       Created:    4.17.18   
+#       Created:    4.21.18   
 #
 # -----------------------------------------------------------------------------------------------
 
@@ -17,14 +17,15 @@ from .database import sql_db as db
 class Sensor(BaseModel):
     
     # Properties
-    id = db.Column(db.Integer, Sequence('sensor_id_seq'), primary_key=True)
-    name = Column(String(50))
-
-    # Constraints
-    # TODO
+    collector_id = db.Column(db.Integer, db.ForeignKey('collector_id'), primary_key=True)
+    sensor_model_id = db.Column(db.Integer, db.ForeignKey('sensor_model_id'), primary_key=True)
+    connection_time = db.Column(db.DateTime, default=datetime.now)
+    connected = db.Column(db.Boolean)
+    collecting_data = db.Column(db.Boolean)
 
     # Relationships
-    # TODO
+    collector = relationship("Collector", back_populates="sensor_models")
+    sensor_model = relationship("SensorModel", back_populates="collectors")
 
     __tablename__ = 'sensors'
 
