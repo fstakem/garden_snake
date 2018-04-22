@@ -8,8 +8,8 @@
 
 
 # Libraries
-from .db.models.base_model import BaseModel
-from .database import sql_db as db
+from .base_model import BaseModel
+from ...database import sql_db as db
 
 
 class App(BaseModel):
@@ -22,10 +22,9 @@ class App(BaseModel):
     latest_version = db.Column(db.Boolean)
 
     # Relationships
-    current_devices = relationship("InstalledApp", back_populates="app")
-    all_devices = relationship("InstalledAppHistory", back_populates="app")
+    devices = db.relationship("InstalledApp", back_populates="app")
 
-    __tablename__ = 'apps'
+    __tablename__ = 'app'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

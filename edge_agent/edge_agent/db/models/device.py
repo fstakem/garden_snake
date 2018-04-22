@@ -8,8 +8,8 @@
 
 
 # Libraries
-from .db.models.base_model import BaseModel
-from .database import sql_db as db
+from .base_model import BaseModel
+from ...database import sql_db as db
 
 
 class Device(BaseModel):
@@ -18,13 +18,12 @@ class Device(BaseModel):
     id = db.Column(db.Integer, db.Sequence('device_id_seq'), primary_key=True)
     device_id = db.Column(db.String(36), nullable=False, unique=True)
     name = db.Column(db.String)
-    type = Column(String)
+    type = db.Column(db.String)
 
     # Relationships
-    installed_apps = relationship("InstalledApp", back_populates="device")
-    installed_app_history = relationship("InstalledAppHistory", back_populates="device")
+    installed_apps = db.relationship("InstalledApp", back_populates="device")
 
-    __tablename__ = 'devices'
+    __tablename__ = 'device'
 
     __mapper_args__ = {
         'polymorphic_identity':'device',

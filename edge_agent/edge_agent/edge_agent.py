@@ -37,12 +37,10 @@ flask_app = Flask(__name__)
 flask_app.secret_key                                = 'TTS96tKYthZh2V2jO7Bwi1c4BO0BFYfe8YnDegkg'
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS']  = False
 flask_app.config['SQLALCHEMY_DATABASE_URI']         = app_config['db_connect_str']
-flask_app.config['DB_NAME']                         = app_config['db_name']
 flask_app.register_blueprint(current_app)
 
 # Init DB
 sql_db.init_app(flask_app)
-
 
 # App code
 # -----------------------------------------------------

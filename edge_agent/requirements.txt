@@ -2,6 +2,7 @@ ipython
 ipdb
 pytest
 
+psycopg2
 sqlalchemy
 SQLAlchemy-Utils
 alembic

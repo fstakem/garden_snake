@@ -8,8 +8,8 @@
 
 
 # Libraries
-from .db.models.base_model import BaseModel
-from .database import sql_db as db
+from .base_model import BaseModel
+from ...database import sql_db as db
 
 
 class SensorModel(BaseModel):
@@ -23,9 +23,9 @@ class SensorModel(BaseModel):
     units = db.Column(db.String)
 
     # Relationships
-    collectors = relationship("Sensor", back_populates="sensor_model")
+    collectors = db.relationship("Sensor", back_populates="sensor_model")
 
-    __tablename__ = 'sensor_models'
+    __tablename__ = 'sensor_model'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

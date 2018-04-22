@@ -13,7 +13,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import object_mapper
 
-from .database import sql_db as db
+from ...database import sql_db as db
 
 
 class BaseModel(db.Model):

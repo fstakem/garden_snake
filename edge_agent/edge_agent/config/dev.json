@@ -1,7 +1,9 @@
 {
     "app_name": "edge_agent",
     "version": "0.0.1",
-    "db_user": "pi",
+    "db_type": "postgres",
+    "db_user": "postgres",
     "db_host": "localhost",
-    "db_name": "iot_data"
+    "db_name": "iot_data",
+    "db_port": 6000
 }
