@@ -15,14 +15,14 @@ from ...database import sql_db as db
 class App(BaseModel):
     
     # Properties
-    id = db.Column(db.Integer, db.Sequence('app_id_seq'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     app_id = db.Column(db.String, nullable=False, unique=True)
     name = db.Column(db.String)
     version = db.Column(db.String)
     latest_version = db.Column(db.Boolean)
 
     # Relationships
-    devices = db.relationship("InstalledApp", back_populates="app")
+    installed_apps = db.relationship("InstalledApp", back_populates="app")
 
     __tablename__ = 'app'
 

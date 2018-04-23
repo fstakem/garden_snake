@@ -15,8 +15,8 @@ from ...database import sql_db as db
 class Sample(BaseModel):
     
     # Properties
-    id = db.Column(db.Integer, db.Sequence('sample_id_seq'), primary_key=True)
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
 
     # Relationships
     sensor = db.relationship("Sensor", back_populates="samples")

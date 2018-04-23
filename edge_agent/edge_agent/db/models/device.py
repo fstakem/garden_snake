@@ -15,7 +15,7 @@ from ...database import sql_db as db
 class Device(BaseModel):
     
     # Properties
-    id = db.Column(db.Integer, db.Sequence('device_id_seq'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     device_id = db.Column(db.String(36), nullable=False, unique=True)
     name = db.Column(db.String)
     type = db.Column(db.String)

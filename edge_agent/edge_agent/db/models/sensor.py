@@ -17,15 +17,17 @@ from ...database import sql_db as db
 class Sensor(BaseModel):
     
     # Properties
-    collector_id = db.Column(db.Integer, db.ForeignKey('collector.id'), primary_key=True)
-    sensor_model_id = db.Column(db.Integer, db.ForeignKey('sensor_model.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    collector_id = db.Column(db.Integer, db.ForeignKey('collector.id'))
+    sensor_model_id = db.Column(db.Integer, db.ForeignKey('sensor_model.id'))
     connection_time = db.Column(db.DateTime, default=datetime.now)
     connected = db.Column(db.Boolean)
     collecting_data = db.Column(db.Boolean)
 
     # Relationships
-    collector = db.relationship("Collector", back_populates="sensor_models")
-    sensor_model = db.relationship("SensorModel", back_populates="collectors")
+    collector = db.relationship("Collector", back_populates="sensors")
+    sensor_model = db.relationship("SensorModel", back_populates="sensors")
+    samples = db.relationship("Sample", back_populates="sensor")
 
     __tablename__ = 'sensor'
 
