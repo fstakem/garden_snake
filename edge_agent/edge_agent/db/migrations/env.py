@@ -22,10 +22,12 @@ root_path = path.parent.parent.parent.parent
 
 import sys
 sys.path.append(str(root_path))
-print(root_path)
-print(sys.path)
 from edge_agent.app import sql_db
 target_metadata = sql_db.metadata
+
+# DB connection str
+from edge_agent.app import app_config
+db_config.set_main_option('sqlalchemy.url', app_config['db_connect_str'])
 
 
 
