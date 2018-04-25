@@ -10,8 +10,8 @@
 # Libraries
 from datetime import datetime
 
-from .base_model import BaseModel
-from ...database import sql_db as db
+from edge_agent.db.models.base_model import BaseModel
+from edge_agent.database import sql_db as db
 
 
 class InstalledApp(BaseModel):

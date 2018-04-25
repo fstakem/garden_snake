@@ -15,8 +15,8 @@ from flask import current_app
 from flask_restful import Api, Resource, url_for
 from jinja2 import TemplateNotFound
 
-from ....database import sql_db
-from ....db.models.sample import Sample
+from edge_agent.database import sql_db
+from edge_agent.db.models.sample import Sample
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

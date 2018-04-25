@@ -13,9 +13,9 @@ import logging
 
 from flask import request, url_for, jsonify, Flask
 
-from .database import sql_db
-from .config.config import load_config
-from .api.version_0_1_0.controllers.main import app_v0_1_0
+from edge_agent.database import sql_db
+from edge_agent.config.config import load_config
+from edge_agent.api.version_0_1_0.controllers.main import app_v0_1_0
 
 
 # Framework globals

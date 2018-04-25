@@ -8,8 +8,8 @@
 
 
 # Libraries
-from .device import Device
-from ...database import sql_db as db
+from edge_agent.db.models.device import Device
+from edge_agent.database import sql_db as db
 
 
 class Gateway(Device):
