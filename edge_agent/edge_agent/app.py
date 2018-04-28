@@ -51,3 +51,10 @@ def root():
 @flask_app.route('/version')
 def version():
     return config['version']
+
+@flask_app.route('/routes')
+def routes():
+    rules = [x for x in flask_app.url_map.iter_rules()]
+    routes = {x.rule: '{} {}'.format(x.endpoint, x.methods) for x in rules}
+
+    return jsonify(routes)
