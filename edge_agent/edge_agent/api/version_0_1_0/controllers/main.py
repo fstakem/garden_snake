@@ -11,7 +11,6 @@
 import os
 
 from flask import Blueprint, render_template, abort, request, redirect, session
-from flask import current_app
 from flask_restful import Api, Resource, url_for
 from jinja2 import TemplateNotFound
 
@@ -22,7 +21,7 @@ from edge_agent.api.version_0_1_0.controllers.app import App as AppController
 from edge_agent.api.version_0_1_0.controllers.app import AppList as AppListController
 from edge_agent.api.version_0_1_0.controllers.collector import Collector as CollectorController
 from edge_agent.api.version_0_1_0.controllers.collector import CollectorList as CollectorListController
-from edge_agent.api.version_0_1_0.controllers.gateway import Gateway as GatwayController
+from edge_agent.api.version_0_1_0.controllers.gateway import Gateway as GatewayController
 from edge_agent.api.version_0_1_0.controllers.gateway import GatewayList as GatewayListController
 from edge_agent.api.version_0_1_0.controllers.installed_app import InstalledApp as InstalledAppController
 from edge_agent.api.version_0_1_0.controllers.installed_app import InstalledAppList as InstalledAppListController
@@ -36,11 +35,11 @@ from edge_agent.api.version_0_1_0.controllers.sensor_model import SensorModelLis
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 version_value = '0_1_0'
-version_name = 'app_v' + version_value
+version_name = 'v' + version_value
 
 app_v0_1_0 = Blueprint(version_name, version_name, 
     static_folder='edge_agent/api/version_0_1_0/static', 
-    static_url_path='/test',
+    static_url_path='',
     template_folder='edge_agent/api/version_0_1_0/templates')
 
 
@@ -74,5 +73,4 @@ rest_api.resource(SensorController, '/sensor/<int:id>')
 rest_api.resource(SensorListController, '/sensor/all')
 rest_api.resource(SensorModelController, '/sensor_model/<int:id>')
 rest_api.resource(SensorModelListController, '/sensor_model/all')
-
 

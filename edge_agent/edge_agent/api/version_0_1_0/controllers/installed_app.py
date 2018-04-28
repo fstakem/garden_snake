@@ -29,7 +29,7 @@ class InstalledApp(Resource):
         pass
 
 
-class installedAppList(Resource):
+class InstalledAppList(Resource):
 
     def get(self):
         return 'installed app get all'
