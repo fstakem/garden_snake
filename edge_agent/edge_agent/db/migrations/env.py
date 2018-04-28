@@ -16,6 +16,7 @@ fileConfig(db_config.config_file_name)
 # Setup path
 path = Path(__file__).absolute()
 root_path = path.parent.parent.parent.parent
+print(root_path)
 sys.path.append(str(root_path))
 
 from edge_agent.app import sql_db
