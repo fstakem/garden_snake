@@ -1,3 +1,5 @@
+# DB
+# -----------------------------------------------------------------------------------------------
 # Start postgres
 sudo docker run --rm --name postgres_db -p 6000:5432 -e POSTGRES_PASSWORD=passwd -d postgres
 
@@ -7,6 +9,7 @@ psql -U postgres
 
 # Create db
 CREATE DATABASE iot_data;
+DROP DATABASE iot_data;
 
 # Connect to postgres docker
 psql -h localhost -p 6000 -U postgres
@@ -14,6 +17,9 @@ psql -h localhost -p 6000 -U postgres
 # Get postgres ip
 sudo docker inspect postgres_db | grep IPAddress\"
 
+
+# Web docker
+# -----------------------------------------------------------------------------------------------
 # Build image
 sudo docker build -t image_name --rm .
 
@@ -30,3 +36,12 @@ docker exec -u 0 -it 6ba1c3ac75dd bash
 # Remove all containers
 sudo docker stop $(sudo docker ps -a -q)
 sudo docker rm $(sudo docker ps -a -q)
+
+
+# Migrations
+# -----------------------------------------------------------------------------------------------
+# Autogenerate migration
+alembic revision --autogenerate -m "Initial migration"
+
+# Alembic run migration
+alembic upgrade head

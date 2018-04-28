@@ -2,6 +2,8 @@ from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
+from pathlib import Path
+import sys
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -11,17 +13,11 @@ db_config = context.config
 # This line sets up loggers basically.
 fileConfig(db_config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadatas
-# target_metadata = None
-from pathlib import Path
+# Setup path
 path = Path(__file__).absolute()
 root_path = path.parent.parent.parent.parent
-
-import sys
 sys.path.append(str(root_path))
+
 from edge_agent.app import sql_db
 target_metadata = sql_db.metadata
 
