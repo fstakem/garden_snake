@@ -12,15 +12,17 @@ from flask_restful import Resource
 from flask import jsonify
 
 from edge_agent.db.models.sensor import Sensor as SensorModel
+from edge_agent.db.schema.sensor_schema import SensorSchema
 
 
 class Sensor(Resource):
+    schema = SensorSchema()
 
     def get(self, id):
         sensor = SensorModel.query.filter_by(id=id).first()
 
         if sensor:
-            sensor = sensor.to_dict()
+            sensor = self.schema.dump(sensor).data
 
         return jsonify(sensor=sensor)
 
@@ -38,9 +40,10 @@ class Sensor(Resource):
 
 
 class SensorList(Resource):
+    schema = SensorSchema()
 
     def get(self):
         sensors = SensorModel.query.order_by(SensorModel.connection_time).all()
-        sensors = [x.to_dict() for x in sensors]
+        sensors = [self.schema.dump(x).data for x in sensors]
 
         return jsonify(sensors=sensors)

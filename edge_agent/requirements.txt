@@ -10,3 +10,5 @@ flask
 Flask-SQLAlchemy
 Flask-RESTful
 Flask-WTF
+flask-marshmallow
+marshmallow-sqlalchemy

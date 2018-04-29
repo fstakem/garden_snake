@@ -12,15 +12,17 @@ from flask_restful import Resource
 from flask import jsonify
 
 from edge_agent.db.models.sample import Sample as SampleModel
+from edge_agent.db.schema.sample_schema import SampleSchema
 
 
 class Sample(Resource):
+    schema = SampleSchema()
 
     def get(self, id):
         sample = SampleModel.query.filter_by(id=id).first()
 
         if sample:
-            sample = sample.to_dict()
+            sample = self.schema.dump(x).data
 
         return jsonify(sample=sample)
 
@@ -28,7 +30,8 @@ class Sample(Resource):
         pass
 
     def post(self, id):
-        pass
+        data = {}
+        sample = SampleModel(data=data)
 
     def delete(self, id):
         pass
@@ -38,9 +41,10 @@ class Sample(Resource):
 
 
 class SampleList(Resource):
+    schema = SampleSchema()
 
     def get(self):
         samples = SampleModel.query.order_by(SampleModel.id).all()
-        samples = [x.to_dict() for x in samples]
+        samples = [self.schema.dump(x).data for x in samples]
 
         return jsonify(samples=samples)

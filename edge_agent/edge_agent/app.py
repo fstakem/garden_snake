@@ -13,7 +13,7 @@ import logging
 
 from flask import request, url_for, jsonify, Flask
 
-from edge_agent.database import sql_db
+from edge_agent.database import sql_db, marsh
 from edge_agent.config.config import load_config
 from edge_agent.api.version_0_1_0.controllers.main import app_v0_1_0, version_name
 
@@ -41,6 +41,9 @@ flask_app.register_blueprint(current_app, url_prefix='/{}'.format(version_name))
 
 # Init DB
 sql_db.init_app(flask_app)
+
+# Init serial/deserialization
+marsh.init_app(flask_app)
 
 # App code
 # -----------------------------------------------------
