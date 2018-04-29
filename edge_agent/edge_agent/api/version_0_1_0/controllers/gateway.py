@@ -9,12 +9,20 @@
 
 # Libraries
 from flask_restful import Resource
+from flask import jsonify
+
+from edge_agent.db.models.gateway import Gateway as GatewayModel
 
 
 class Gateway(Resource):
 
     def get(self, id):
-        return 'gateway get {}'.format(id)
+        gateway = GatewayModel.query.filter_by(id=id).first()
+
+        if gateway:
+            gateway = gateway.to_dict()
+
+        return jsonify(gateway=gateway)
 
     def put(self, id):
         pass
@@ -32,4 +40,7 @@ class Gateway(Resource):
 class GatewayList(Resource):
 
     def get(self):
-        return 'gateway get all'
+        gateways = GatewayModel.query.order_by(GatewayModel.name).all()
+        gateways = [x.to_dict() for x in gateways]
+
+        return jsonify(gateways=gateways)

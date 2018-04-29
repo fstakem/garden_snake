@@ -9,12 +9,20 @@
 
 # Libraries
 from flask_restful import Resource
+from flask import jsonify
+
+from edge_agent.db.models.sensor_model import SensorModel as SensorModelDb
 
 
 class SensorModel(Resource):
 
     def get(self, id):
-        return 'sensor model get {}'.format(id)
+        sensor = SensorModelDb.query.filter_by(id=id).first()
+
+        if sensor:
+            sensor = sensor.to_dict()
+
+        return jsonify(sensor=sensor)
 
     def put(self, id):
         pass
@@ -32,4 +40,7 @@ class SensorModel(Resource):
 class SensorModelList(Resource):
 
     def get(self):
-        return 'sensor model get all'
+        sensors = SensorModelDb.query.order_by(SensorModelDb.name).all()
+        sensors = [x.to_dict() for x in sensors]
+
+        return jsonify(sensors=sensors)
