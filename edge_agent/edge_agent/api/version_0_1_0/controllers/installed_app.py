@@ -19,9 +19,6 @@ class InstalledApp(Resource):
     def put(self, id):
         pass
 
-    def post(self, id):
-        pass
-
     def delete(self, id):
         pass
 
@@ -33,3 +30,6 @@ class InstalledAppList(Resource):
 
     def get(self):
         return 'installed app get all'
+
+    def post(self):
+        pass

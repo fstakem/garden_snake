@@ -29,9 +29,6 @@ class Sensor(Resource):
     def put(self, id):
         pass
 
-    def post(self, id):
-        pass
-
     def delete(self, id):
         pass
 
@@ -47,3 +44,6 @@ class SensorList(Resource):
         sensors = [self.schema.dump(x).data for x in sensors]
 
         return jsonify(sensors=sensors)
+
+    def post(self):
+        pass

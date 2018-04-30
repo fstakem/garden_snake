@@ -29,9 +29,6 @@ class Gateway(Resource):
     def put(self, id):
         pass
 
-    def post(self, id):
-        pass
-
     def delete(self, id):
         pass
 
@@ -47,3 +44,6 @@ class GatewayList(Resource):
         gateways = [self.schema.dump(x).data for x in gateways]
 
         return jsonify(gateways=gateways)
+
+    def post(self):
+        pass

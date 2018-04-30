@@ -29,9 +29,6 @@ class Collector(Resource):
     def put(self, id):
         pass
 
-    def post(self, id):
-        pass
-
     def delete(self, id):
         pass
 
@@ -47,3 +44,6 @@ class CollectorList(Resource):
         collectors = [self.schema.dump(x).data for x in collectors]
 
         return jsonify(collectors=collectors)
+
+    def post(self):
+        pass

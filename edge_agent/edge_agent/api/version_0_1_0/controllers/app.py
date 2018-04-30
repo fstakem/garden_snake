@@ -19,9 +19,6 @@ class App(Resource):
     def put(self, id):
         pass
 
-    def post(self, id):
-        pass
-
     def delete(self, id):
         pass
 
@@ -33,3 +30,6 @@ class AppList(Resource):
 
     def get(self):
         return 'app get all'
+
+    def post(self):
+        pass
