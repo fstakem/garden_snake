@@ -1,0 +1,56 @@
+version: '3'
+
+services:
+  broker:
+    image: eclipse-mosquitto:latest
+    container_name: broker
+    ports:
+      - 1883:1883
+    networks:
+      - front-tier
+      - back-tier
+  nodered:
+    image: nodered/node-red-docker
+    container_name: nodered
+    ports:
+      - 1880:1880
+    volumes:
+      - nodered-data:/var/lib/nodered/data
+    networks:
+      - front-tier
+      - back-tier
+    depends_on:
+      - broker
+  web:
+    image: edge_agent_img
+    container_name: edge_agent
+    env_file:
+    - ./edge_agent/env_vars/app.sh
+    - ./edge_agent/env_vars/postgres.sh
+    ports:
+      - 5000:5000
+    networks:
+      - front-tier
+      - back-tier
+    depends_on:
+      - db
+   db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: iotwin
+      POSTGRES_DB: iot_data
+    ports:
+      - 6000:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - back-tier
+
+volumes:
+  db-data:
+  nodered-data:  
+
+networks:
+  front-tier:
+  back-tier:

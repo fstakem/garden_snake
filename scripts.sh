@@ -61,3 +61,12 @@ sudo npm install node-red-contrib-postgres
 
 # Start node red
 node-red-start
+
+# Nodered docker
+
+# Equivalent to docker compose
+sudo docker run -it -h broker --name mqtt_broker -p 1883:1883 --rm eclipse-mosquitto
+sudo docker run -it -h postgres --name db --rm -p 6000:5432 -e POSTGRES_PASSWORD=iotwin -d postgres
+sudo docker run -it -h nodered --name nodered -p 1880:1880 --rm  nodered/node-red-docker
+sudo docker run -it -h edge_agent --name edge_agent -p 5000:5000 --rm --env-file ./env_vars.sh edge_agent_img
+

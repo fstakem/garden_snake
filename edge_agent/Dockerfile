@@ -28,8 +28,8 @@ USER edge_agent
 
 # Finish
 WORKDIR /opt/edge_agent
-CMD ["/bin/bash"]
-CMD ["flask", "run", "--host=0.0.0.0"]
 
-# CMD [ "python", "./your-daemon-or-script.py" ]
-# flask run --host=0.0.0.0
+# debug
+# CMD ["/bin/bash"]
+
+CMD ["flask", "run", "--host=0.0.0.0"]
