@@ -20,6 +20,9 @@ sudo ~/envs/upy_env/bin/esptool.py --chip esp8266 --p /dev/ttyUSB0 write_flash -
 # In rshell
 ls /pyboard
 
+# Start shell
+shell
+
 # Start mosquitto
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm eclipse-mosquitto
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm --restart always eclipse-mosquitto
@@ -48,4 +51,13 @@ db: iot_data
 
 # Postgres for testing
 sudo docker pull postgres:latest
-sudo docker run -it -h postgres --name test-postgres --rm -e POSTGRES_PASSWORD=iotwin -d postgres
+sudo docker run -it -h postgres --name garden-postgres --rm -e POSTGRES_PASSWORD=iotwin -d postgres
+sudo docker exec -it garden-postgres psql -U project -W project project
+sudo docker run -it --rm --link garden_postgres:postgres postgres psql -h postgres -U postgres
+
+# Install postgres additions to node red
+cd /usr/lib/node_modules/node-red
+sudo npm install node-red-contrib-postgres
+
+# Start node red
+node-red-start

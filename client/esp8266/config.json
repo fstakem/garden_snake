@@ -21,6 +21,6 @@
     },
     "runtime": {
         "debug": true,
-        "sleep_time_sec": 5
+        "sleep_time_sec": 10
     }
 }
