@@ -9,18 +9,20 @@ services:
     networks:
       - front-tier
       - back-tier
+
   nodered:
     image: nodered/node-red-docker
     container_name: nodered
     ports:
       - 1880:1880
     volumes:
-      - nodered-data:/var/lib/nodered/data
+      - nodered_data:/var/lib/nodered/data
     networks:
       - front-tier
       - back-tier
     depends_on:
       - broker
+
   web:
     image: edge_agent_img
     container_name: edge_agent
@@ -34,7 +36,8 @@ services:
       - back-tier
     depends_on:
       - db
-   db:
+      
+  db:
     image: postgres:latest
     container_name: db
     environment:
@@ -43,13 +46,13 @@ services:
     ports:
       - 6000:5432
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     networks:
       - back-tier
 
 volumes:
-  db-data:
-  nodered-data:  
+  db_data:
+  nodered_data:  
 
 networks:
   front-tier:
