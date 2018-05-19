@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Micropython instructions
+# ---------------------------------------------------------------------------------------------
 # Find port of board
 dmesg | grep ttyUSB
 
@@ -7,12 +9,12 @@ dmesg | grep ttyUSB
 rshell --port /dev/ttyUSB0 --baud 115200 --buffer-size 128 --editor nano
 sudo ~/envs/upy_env/bin/rshell --port /dev/ttyUSB0 --baud 115200 --buffer-size 128 --editor vim
 
-# Copy files
+# Copy files to board filesystem
 cp ./pycam/arducam.py /pyboard/arducam.py
 cp ./pycam/arducam_constants.py /pyboard/arducam_constants.py
 cp ./pycam/main.py /pyboard/main.py
 
-# Flash new firmware with esptool
+# Flash new firmware with esptool: each board is slightly different
 sudo ~/envs/upy_env/bin/esptool.py --port /dev/ttyUSB0 erase_flash
 sudo ~/envs/upy_env/bin/esptool.py --chip esp32 -p /dev/ttyUSB0 write_flash -z 0x1000 <firmmware_path>
 sudo ~/envs/upy_env/bin/esptool.py --chip esp8266 --p /dev/ttyUSB0 write_flash --flash_size=detect 0 <firmmware_path>
@@ -23,6 +25,10 @@ ls /pyboard
 # Start shell
 shell
 
+
+
+# Other
+# ---------------------------------------------------------------------------------------------
 # Start mosquitto
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm eclipse-mosquitto
 sudo docker run -it -h broker --name mqtt_broker_box -p 1883:1883 --rm --restart always eclipse-mosquitto
@@ -62,11 +68,42 @@ sudo npm install node-red-contrib-postgres
 # Start node red
 node-red-start
 
-# Nodered docker
-
-# Equivalent to docker compose
+# Equivalent to docker compose with individual containers
 sudo docker run -it -h broker --name mqtt_broker -p 1883:1883 --rm eclipse-mosquitto
 sudo docker run -it -h postgres --name db --rm -p 6000:5432 -e POSTGRES_PASSWORD=iotwin -d postgres
 sudo docker run -it -h nodered --name nodered -p 1880:1880 --rm  nodered/node-red-docker
 sudo docker run -it -h edge_agent --name edge_agent -p 5000:5000 --rm --env-file ./env_vars.sh edge_agent_img
 
+# Remove all stopped containers
+sudo docker rm -f $(sudo docker ps -a -q)
+
+
+# Docker compose instructions
+# ---------------------------------------------------------------------------------------------
+# Remove all stopped containers
+sudo docker rm -f $(sudo docker ps -a -q)
+
+# Prune volumes if starting over and don't want db data
+sudo docker volume prune
+
+# Prune networks if they have changed and want to remove old ones
+sudo docker network prune
+
+# get containers up and running
+sudo docker-compose up
+
+# connect into db to do maintanace or add db
+sudo docker run -it --rm --net garden_snake_back_net --link db:postgres postgres psql -h postgres -U postgres
+
+# get db IP
+sudo docker inspect db | grep IP
+
+# connect to edge agent to run migration
+sudo docker exec -it  -u 0 edge_agent /bin/bash
+cd /opt/edge_agent/edge_agent/db
+<source env vars postgres from project: 
+    1) not in the container as didnt copy over \
+    2) change host to proper host 
+    3) port is 5432>
+alembic upgrade head
+exit

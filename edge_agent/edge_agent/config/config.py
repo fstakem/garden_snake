@@ -22,6 +22,11 @@ def load_config():
     port = os.environ['DB_PORT']
     db_passwd = os.environ['DB_PW']
 
+    print('DB user: {}'.format(user))
+    print('DB host: {}'.format(loc))
+    print('DB name: {}'.format(db_name))
+    print('DB port: {}'.format(port))
+
     config_dir_path = dirname(abspath(__file__))
     config_file = env + '.json'
     config_path = os.path.join(config_dir_path, config_file)

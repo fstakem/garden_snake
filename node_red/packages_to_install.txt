@@ -1,0 +1,9 @@
+node-red-contrib-postgres
+node-red-contrib-redis
+node-red-node-weather-underground
+node-red-contrib-coap
+node-red-node-smooth
+node-red-contrib-play-audio
+
+lat: 33.8509120
+lon: -84.3674710

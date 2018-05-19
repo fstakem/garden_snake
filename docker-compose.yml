@@ -7,8 +7,8 @@ services:
     ports:
       - 1883:1883
     networks:
-      - front-tier
-      - back-tier
+      - front_net
+      - back_net
 
   nodered:
     image: nodered/node-red-docker
@@ -18,8 +18,8 @@ services:
     volumes:
       - nodered_data:/var/lib/nodered/data
     networks:
-      - front-tier
-      - back-tier
+      - front_net
+      - back_net
     depends_on:
       - broker
 
@@ -28,12 +28,12 @@ services:
     container_name: edge_agent
     env_file:
     - ./edge_agent/env_vars/app.sh
-    - ./edge_agent/env_vars/postgres.sh
+    - ./edge_agent/env_vars/postgres_compose.sh
     ports:
       - 5000:5000
     networks:
-      - front-tier
-      - back-tier
+      - front_net
+      - back_net
     depends_on:
       - db
       
@@ -48,12 +48,12 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - back-tier
+      - back_net
 
 volumes:
   db_data:
   nodered_data:  
 
 networks:
-  front-tier:
-  back-tier:
+  front_net:
+  back_net:
