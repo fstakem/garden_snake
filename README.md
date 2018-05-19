@@ -15,3 +15,6 @@ Garden sensors with sensor, edge, and cloud components
 13. Flask is using internal web server for the time being as data volume is low
 14. Need to figure out an automated way to update node red and install DAG
 15. Research on parsing nodered DAG and using in custom processing engine needs to be done
+16. Clients need to switch to using coap instead of mqtt but micropython support is not great
+17. High rate signals should not use something like mqtt
+18. Sound sensors for higher rate data is also planned but client side work needs to be done
