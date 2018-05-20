@@ -18,3 +18,15 @@ Garden sensors with sensor, edge, and cloud components
 16. Clients need to switch to using coap instead of mqtt but micropython support is not great
 17. High rate signals should not use something like mqtt
 18. Sound sensors for higher rate data is also planned but client side work needs to be done
+
+TODO
+1. Add ability to export db to er diagram
+2. Research node red use of functions, templates, db, requests
+3. Create new tables for generic weather data
+4. Redo tables for insert of raw samples
+5. Finish node red flow for insertion
+6. Setup new computer with docker and run the docker compose
+7. Finish sensor hardware
+8. Finish power supply hardware
+9. Deploy system
+10. Research new sensors and put together prototype
