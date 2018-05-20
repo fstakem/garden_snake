@@ -95,7 +95,7 @@ sudo docker-compose up
 # connect into db to do maintanace or add db
 sudo docker run -it --rm --net garden_snake_back_net --link db:postgres postgres psql -h postgres -U postgres
 
-# get db IP
+# get db IP or simply use hostname
 sudo docker inspect db | grep IP
 
 # connect to edge agent to run migration

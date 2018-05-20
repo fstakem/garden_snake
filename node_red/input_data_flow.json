@@ -1,54 +1,244 @@
 [
-  {
-    "id": "27e867e3.21c6c8",
-    "type": "mqtt in",
-    "z": "6c819811.7174e8",
-    "name": "garden_data",
-    "topic": "garden\/data",
-    "qos": "2",
-    "broker": "bd40652d.2d3778",
-    "x": 140,
-    "y": 180,
-    "wires": [
-      [
-        "8e41fd68.ec08a"
-      ]
-    ]
-  },
-  {
-    "id": "8e41fd68.ec08a",
-    "type": "debug",
-    "z": "6c819811.7174e8",
-    "name": "garden_data_debug",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "payload",
-    "x": 370,
-    "y": 320,
-    "wires": [
-      
-    ]
-  },
-  {
-    "id": "bd40652d.2d3778",
-    "type": "mqtt-broker",
-    "z": "",
-    "name": "garden_broker",
-    "broker": "localhost",
-    "port": "1883",
-    "clientid": "",
-    "usetls": false,
-    "compatmode": true,
-    "keepalive": "60",
-    "cleansession": true,
-    "willTopic": "",
-    "willQos": "0",
-    "willPayload": "",
-    "birthTopic": "",
-    "birthQos": "0",
-    "birthPayload": ""
-  }
+    {
+        "id": "e7fec242.1bf568",
+        "type": "function",
+        "z": "e4f4743a.7dfac",
+        "name": "db func",
+        "func": "msg.queryParameters = msg.queryParameters || {};\nmsg.queryParameters.param1 = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 440,
+        "y": 240,
+        "wires": [
+            [
+                "134a730d.3bbe75",
+                "b8de3aa2.d98368"
+            ]
+        ]
+    },
+    {
+        "id": "4589799c.e7127",
+        "type": "mqtt in",
+        "z": "e4f4743a.7dfac",
+        "name": "garden broker",
+        "topic": "garden/data",
+        "qos": "2",
+        "broker": "c4634c88.52d4d8",
+        "x": 210,
+        "y": 240,
+        "wires": [
+            [
+                "e7fec242.1bf568",
+                "a46e1b2f.d21348",
+                "7a84e7a5.2710d8"
+            ]
+        ]
+    },
+    {
+        "id": "a46e1b2f.d21348",
+        "type": "debug",
+        "z": "e4f4743a.7dfac",
+        "name": "garden data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 430,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "134a730d.3bbe75",
+        "type": "debug",
+        "z": "e4f4743a.7dfac",
+        "name": "garden transform",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 690,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "7a84e7a5.2710d8",
+        "type": "wunderground",
+        "z": "e4f4743a.7dfac",
+        "name": "",
+        "lon": "-84.3674710",
+        "lat": "33.8509120",
+        "city": "",
+        "country": "",
+        "x": 420,
+        "y": 440,
+        "wires": [
+            [
+                "b4dec939.c76308",
+                "29b8960f.6ec80a"
+            ]
+        ]
+    },
+    {
+        "id": "29b8960f.6ec80a",
+        "type": "debug",
+        "z": "e4f4743a.7dfac",
+        "name": "weather data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 610,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "b4dec939.c76308",
+        "type": "function",
+        "z": "e4f4743a.7dfac",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5dfd22ac.0cc82c",
+        "type": "sunrise",
+        "z": "e4f4743a.7dfac",
+        "name": "",
+        "lat": "33.85228",
+        "lon": "-84.36997",
+        "start": "sunrise",
+        "end": "sunset",
+        "x": 210,
+        "y": 680,
+        "wires": [
+            [],
+            [
+                "155aaec4.3dc7d9",
+                "1e6b97ff.dfd39"
+            ]
+        ]
+    },
+    {
+        "id": "155aaec4.3dc7d9",
+        "type": "function",
+        "z": "e4f4743a.7dfac",
+        "name": "",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 430,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1e6b97ff.dfd39",
+        "type": "debug",
+        "z": "e4f4743a.7dfac",
+        "name": "sunrise data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 450,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "3957523b.36da66",
+        "type": "mqtt out",
+        "z": "e4f4743a.7dfac",
+        "name": "garden publisher",
+        "topic": "garden/data",
+        "qos": "",
+        "retain": "",
+        "broker": "c4634c88.52d4d8",
+        "x": 430,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "8832d26e.59d7b",
+        "type": "inject",
+        "z": "e4f4743a.7dfac",
+        "name": "test data",
+        "topic": "",
+        "payload": "{\"id\":\"1\",\"timestamp\":\"01-01-01T01:01:01Z\",\"percent_dry\":\".85\",\"temperature\":\"76.5\",\"humidity\":\"32\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 180,
+        "y": 100,
+        "wires": [
+            [
+                "3957523b.36da66"
+            ]
+        ]
+    },
+    {
+        "id": "b8de3aa2.d98368",
+        "type": "template",
+        "z": "e4f4743a.7dfac",
+        "name": "db template",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "select * from table1 where field2 > $param1",
+        "output": "str",
+        "x": 690,
+        "y": 240,
+        "wires": [
+            [
+                "61576862.7bd638"
+            ]
+        ]
+    },
+    {
+        "id": "61576862.7bd638",
+        "type": "http request",
+        "z": "e4f4743a.7dfac",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "url": "",
+        "tls": "",
+        "x": 930,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c4634c88.52d4d8",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "mosquitto",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
 ]
-
