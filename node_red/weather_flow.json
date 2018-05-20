@@ -1,0 +1,78 @@
+[
+    {
+        "id": "50b0e808.80463",
+        "type": "debug",
+        "z": "7d50f383.536964",
+        "name": "weather data debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 680,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "acf5b83c.0aa53",
+        "type": "function",
+        "z": "7d50f383.536964",
+        "name": "db func",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 640,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5fd0c17d.ff81c",
+        "type": "wunderground",
+        "z": "7d50f383.536964",
+        "name": "",
+        "lon": "-84.3674710",
+        "lat": "33.8509120",
+        "city": "",
+        "country": "",
+        "x": 400,
+        "y": 120,
+        "wires": [
+            [
+                "acf5b83c.0aa53",
+                "50b0e808.80463"
+            ]
+        ]
+    },
+    {
+        "id": "55f85439.b4ea8c",
+        "type": "comment",
+        "z": "7d50f383.536964",
+        "name": "General Weather Pipeline",
+        "info": "",
+        "x": 150,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "3750e94f.bff5c6",
+        "type": "inject",
+        "z": "7d50f383.536964",
+        "name": "5 min interval",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "5fd0c17d.ff81c"
+            ]
+        ]
+    }
+]

@@ -95,6 +95,9 @@ sudo docker-compose up
 # connect into db to do maintanace or add db
 sudo docker run -it --rm --net garden_snake_back_net --link db:postgres postgres psql -h postgres -U postgres
 
+# show er for db
+eralchemy -i 'postgresql+psycopg2://postgres:iotwin@db:5432/iot_data' -o db.pdf
+
 # get db IP or simply use hostname
 sudo docker inspect db | grep IP
 
@@ -107,3 +110,8 @@ cd /opt/edge_agent/edge_agent/db
     3) port is 5432>
 alembic upgrade head
 exit
+
+
+
+# Insert into db
+insert into sample(data) values ('{"fred": "cool"}');

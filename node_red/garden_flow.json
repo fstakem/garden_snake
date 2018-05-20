@@ -1,0 +1,316 @@
+[
+    {
+        "id": "4d34aed9.4034d",
+        "type": "tab",
+        "label": "Garden Data",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "bae61825.bc9528",
+        "type": "function",
+        "z": "4d34aed9.4034d",
+        "name": "db func",
+        "func": "msg.queryParameters = msg.queryParameters || {};\nmsg.queryParameters.param1 = 1;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 240,
+        "wires": [
+            [
+                "c7fe9a67.0ffc18",
+                "95a88aff.e8eb28"
+            ]
+        ]
+    },
+    {
+        "id": "b18db85f.7c9278",
+        "type": "mqtt in",
+        "z": "4d34aed9.4034d",
+        "name": "garden broker",
+        "topic": "garden/data",
+        "qos": "2",
+        "broker": "73e15515.7d6e14",
+        "x": 130,
+        "y": 240,
+        "wires": [
+            [
+                "bae61825.bc9528",
+                "c8a0f3d7.f975e8"
+            ]
+        ]
+    },
+    {
+        "id": "c8a0f3d7.f975e8",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "garden data debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 440,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "c7fe9a67.0ffc18",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "garden transform debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "x": 720,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "45a3f663.36b4f8",
+        "type": "mqtt out",
+        "z": "4d34aed9.4034d",
+        "name": "garden publisher",
+        "topic": "garden/data",
+        "qos": "",
+        "retain": "",
+        "broker": "73e15515.7d6e14",
+        "x": 430,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "daa4f377.e0bd98",
+        "type": "inject",
+        "z": "4d34aed9.4034d",
+        "name": "test data",
+        "topic": "",
+        "payload": "{\"id\":\"1\",\"timestamp\":\"01-01-01T01:01:01Z\",\"percent_dry\":\".85\",\"temperature\":\"76.5\",\"humidity\":\"32\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "45a3f663.36b4f8"
+            ]
+        ]
+    },
+    {
+        "id": "e5ca2ebf.829b18",
+        "type": "comment",
+        "z": "4d34aed9.4034d",
+        "name": "Test: Publish Garden Data",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "a50c9fa9.e2eca",
+        "type": "comment",
+        "z": "4d34aed9.4034d",
+        "name": "Garden Data Pipeline",
+        "info": "",
+        "x": 160,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e987bf3b.eb91e",
+        "type": "comment",
+        "z": "4d34aed9.4034d",
+        "name": "Test: Database Insert",
+        "info": "",
+        "x": 160,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "95a88aff.e8eb28",
+        "type": "postgres",
+        "z": "4d34aed9.4034d",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "iot_data db",
+        "output": false,
+        "outputs": 0,
+        "x": 670,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "2a553b76.1f1dc4",
+        "type": "inject",
+        "z": "4d34aed9.4034d",
+        "name": "test data",
+        "topic": "",
+        "payload": "{\"id\":\"1\",\"timestamp\":\"01-01-01T01:01:01Z\",\"percent_dry\":\".85\",\"temperature\":\"76.5\",\"humidity\":\"32\"}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 520,
+        "wires": [
+            [
+                "c49ce621.be4b28",
+                "ce1e826d.bb1ae8"
+            ]
+        ]
+    },
+    {
+        "id": "1862b4b3.2174cb",
+        "type": "function",
+        "z": "4d34aed9.4034d",
+        "name": "db insert",
+        "func": "var insert = \"insert into sample(data) values ('{\\\"fred\\\": \\\"cool\\\"}');\"\nmsg.payload = insert;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 920,
+        "y": 520,
+        "wires": [
+            [
+                "d21ef221.236a8",
+                "3815cca9.54bddc"
+            ]
+        ]
+    },
+    {
+        "id": "d21ef221.236a8",
+        "type": "postgres",
+        "z": "4d34aed9.4034d",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "iot_data db",
+        "output": true,
+        "outputs": 1,
+        "x": 1230,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c49ce621.be4b28",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "input debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 420,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "3815cca9.54bddc",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "db insert debug",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1250,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "ce1e826d.bb1ae8",
+        "type": "function",
+        "z": "4d34aed9.4034d",
+        "name": "db select",
+        "func": "var insert = \"insert into sample(data) values ('{\\\"fred\\\": \\\"cool\\\"}');\"\nmsg.payload = insert;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 520,
+        "wires": [
+            [
+                "d75dbd23.59cba",
+                "fea4c6df.d8153"
+            ]
+        ]
+    },
+    {
+        "id": "d75dbd23.59cba",
+        "type": "postgres",
+        "z": "4d34aed9.4034d",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "get sensor id",
+        "output": true,
+        "outputs": 1,
+        "x": 670,
+        "y": 520,
+        "wires": [
+            [
+                "1862b4b3.2174cb",
+                "3e0b466d.5e443a"
+            ]
+        ]
+    },
+    {
+        "id": "fea4c6df.d8153",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "db select debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 680,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "3e0b466d.5e443a",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "sensor id debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "x": 940,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "73e15515.7d6e14",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "mosquitto",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    },
+    {
+        "id": "e5a43c00.b2aa9",
+        "type": "postgresdb",
+        "z": "",
+        "hostname": "db",
+        "port": "5432",
+        "db": "iot_data",
+        "ssl": false
+    }
+]

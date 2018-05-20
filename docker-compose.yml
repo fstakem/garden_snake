@@ -4,6 +4,7 @@ services:
   broker:
     image: eclipse-mosquitto:latest
     container_name: broker
+    restart: always
     ports:
       - 1883:1883
     networks:
@@ -13,6 +14,7 @@ services:
   nodered:
     image: nodered/node-red-docker
     container_name: nodered
+    restart: always
     ports:
       - 1880:1880
     volumes:
@@ -26,6 +28,7 @@ services:
   web:
     image: edge_agent_img
     container_name: edge_agent
+    restart: always
     env_file:
     - ./edge_agent/env_vars/app.sh
     - ./edge_agent/env_vars/postgres_compose.sh
@@ -40,6 +43,7 @@ services:
   db:
     image: postgres:latest
     container_name: db
+    restart: always
     environment:
       POSTGRES_PASSWORD: iotwin
       POSTGRES_DB: iot_data
