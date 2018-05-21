@@ -113,5 +113,11 @@ exit
 
 
 
+# Other
+# ---------------------------------------------------------------------------------------------
 # Insert into db
 insert into sample(data) values ('{"fred": "cool"}');
+
+# Get er diagram
+eralchemy -i 'postgresql+psycopg2://postgres:iotwin@172.19.0.2:5432/iot_data' -o out.pdf
+
