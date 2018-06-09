@@ -2,7 +2,7 @@
 #
 #       Company:    Personal Research
 #       By:         Fredrick Stakem
-#       Created:    4.21.18   
+#       Created:    9.9.18   
 #
 # -----------------------------------------------------------------------------------------------
 
@@ -13,26 +13,16 @@ from edge_agent.db.models.serializer import Serializer
 from edge_agent.database import sql_db as db
 
 
-class Device(BaseModel, Serializer):
+class CloudSource(BaseModel, Serializer):
     
     # Properties
     id = db.Column(db.Integer, primary_key=True)
-    device_id = db.Column(db.String(36), nullable=False, unique=True)
-    name = db.Column(db.String)
-    type = db.Column(db.String)
+    url = db.Column(db.String)
 
     # Relationships
-    installed_apps = db.relationship("InstalledApp", back_populates="device")
+    cloud_vars = db.relationship("CloudVar", back_populates="cloud_source")
 
-    __tablename__ = 'device'
-
-    __mapper_args__ = {
-        'polymorphic_identity':'device',
-        'polymorphic_on': type
-    }
+    __tablename__ = 'cloud_source'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    def install_app(remove_old=True):
-        pass

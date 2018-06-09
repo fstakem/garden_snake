@@ -2,16 +2,16 @@
 #
 #       Company:    Personal Research
 #       By:         Fredrick Stakem
-#       Created:    4.29.18   
+#       Created:    6.9.18   
 #
 # -----------------------------------------------------------------------------------------------
 
 
 # Libraries
 from edge_agent.app import marsh
-from edge_agent.db.models.collector import Collector
+from edge_agent.db.models.cloud_source import CloudSource
 
 
-class CollectorSchema(marsh.ModelSchema):
+class CloudSourceSchema(marsh.ModelSchema):
     class Meta:
-        model = Collector
+        model = CloudSource

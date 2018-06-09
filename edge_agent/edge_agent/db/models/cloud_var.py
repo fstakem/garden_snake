@@ -2,31 +2,29 @@
 #
 #       Company:    Personal Research
 #       By:         Fredrick Stakem
-#       Created:    4.21.18   
+#       Created:    9.9.18   
 #
 # -----------------------------------------------------------------------------------------------
 
 
 # Libraries
-from edge_agent.db.models.base_model import BaseModel
-from edge_agent.db.models.serializer import Serializer
+from edge.db.models.collector import Collector
 from edge_agent.database import sql_db as db
 
 
-class SensorModel(BaseModel, Serializer):
+class CloudVar(Collector):
     
     # Properties
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('collector.id'), primary_key=True)
+    cloud_source_id = db.Column(db.Integer, db.ForeignKey('cloud_source.id'))
     name = db.Column(db.String)
-    model = db.Column(db.String)
-    measurement_type = db.Column(db.String)
     description = db.Column(db.String)
     units = db.Column(db.String)
 
     # Relationships
-    sensors = db.relationship("Sensor", back_populates="sensor_model")
+    cloud_source = db.relationship("CloudSource", back_populates="cloud_var")
 
-    __tablename__ = 'sensor_model'
+    __tablename__ = 'cloud_param'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

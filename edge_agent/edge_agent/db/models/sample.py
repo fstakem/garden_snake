@@ -8,20 +8,22 @@
 
 
 # Libraries
-from edge_agent.db.models.base_model import BaseModel
+from edge_agent.database import sql_db as db
+
+from edge_agent.db.models.serializer import Serializer
 from edge_agent.database import sql_db as db
 from sqlalchemy.dialects.postgresql.json import JSONB
 
 
-class Sample(BaseModel):
+class Sample(db.Model, Serializer):
     
     # Properties
     id = db.Column(db.Integer, primary_key=True)
-    sensor_id = db.Column(db.Integer, db.ForeignKey('sensor.id'))
+    collector_id = db.Column(db.Integer, db.ForeignKey('collector.id'))
     data = db.Column(JSONB)
 
     # Relationships
-    sensor = db.relationship("Sensor", back_populates="samples")
+    collector = db.relationship("Collector", back_populates="samples")
 
     __tablename__ = 'sample'
 

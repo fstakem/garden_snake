@@ -9,10 +9,11 @@
 
 # Libraries
 from edge_agent.db.models.base_model import BaseModel
+from edge_agent.db.models.serializer import Serializer
 from edge_agent.database import sql_db as db
 
 
-class App(BaseModel):
+class App(BaseModel, Serializer):
     
     # Properties
     id = db.Column(db.Integer, primary_key=True)

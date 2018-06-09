@@ -24,12 +24,16 @@ from edge_agent.database import sql_db
 
 # Models
 from edge_agent.db.models.app import App
-from edge_agent.db.models.collector import Collector
+from edge_agent.db.cloud_source import CloudSource
+from edge_agent.db.cloud_var import CloudVar
+from edge_agent.db.collector import Collector
 from edge_agent.db.models.device import Device
 from edge_agent.db.models.gateway import Gateway
 from edge_agent.db.models.installed_app import InstalledApp
+from edge_agent.db.models.link import Link
 from edge_agent.db.models.sample import Sample
 from edge_agent.db.models.sensor import Sensor
+from edge_agent.db.models.sensor_board import SensorBoard
 from edge_agent.db.models.sensor_model import SensorModel
 
 # Helper functions
