@@ -16,11 +16,13 @@ class SensorBoard(Device):
     
     # Properties
     id = db.Column(db.Integer, db.ForeignKey('device.id'), primary_key=True)
-    connection_id = db.Column(db.Integer, db.ForeignKey('connection.id'))
+    name = db.Column(db.String)
+    description = db.Column(db.String)
+    version = db.Column(db.String)
 
     # Relationships
     sensors = db.relationship("Sensor", back_populates="sensor_board")
-    connection = db.relationship("Connection", back_populates="sensor_board")
+    link = db.relationship("Link", back_populates="sensor_board")
 
     __tablename__ = 'sensor_board'
 

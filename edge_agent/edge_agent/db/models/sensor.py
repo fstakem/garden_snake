@@ -12,17 +12,16 @@ from datetime import datetime
 
 from edge_agent.db.models.collector import Collector
 from edge_agent.database import sql_db as db
+from sqlalchemy.dialects.postgresql.json import JSONB
 
 
 class Sensor(Collector):
     
     # Properties
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('collector.id'), primary_key=True)
     sensor_board_id = db.Column(db.Integer, db.ForeignKey('sensor_board.id'))
     sensor_model_id = db.Column(db.Integer, db.ForeignKey('sensor_model.id'))
-    connection_time = db.Column(db.DateTime, default=datetime.now)
-    connected = db.Column(db.Boolean)
-    collecting_data = db.Column(db.Boolean)
+    calibration = db.Column(JSONB)
 
     # Relationships
     sensor_board = db.relationship("SensorBoard", back_populates="sensors")

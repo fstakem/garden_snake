@@ -18,7 +18,7 @@ class Gateway(Device):
     id = db.Column(db.Integer, db.ForeignKey('device.id'), primary_key=True)
 
     # Relationships
-    connections = db.relationship("Connection", back_populates="gateway")
+    links = db.relationship("Link", back_populates="gateway")
 
     __tablename__ = 'gateway'
 

@@ -18,6 +18,8 @@ class CloudSource(BaseModel, Serializer):
     # Properties
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String)
+    name = db.Column(db.String)
+    description = db.Column(db.String)
 
     # Relationships
     cloud_vars = db.relationship("CloudVar", back_populates="cloud_source")

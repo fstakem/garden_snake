@@ -8,6 +8,7 @@ from .device import Device
 from .gateway import Gateway
 from .installed_app import InstalledApp
 from .link import Link
+from .measurement import Measurement
 from .sample import Sample
 from .sensor import Sensor
 from .sensor_board import SensorBoard

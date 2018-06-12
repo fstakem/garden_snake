@@ -41,6 +41,9 @@ sudo docker rm $(sudo docker ps -a -q)
 # Migrations
 # -----------------------------------------------------------------------------------------------
 # Autogenerate migration
+cd edge_agent/db
+source ../../env_vars/app.sh
+source ../../env_vars/alembic_export.sh
 alembic revision --autogenerate -m "Initial migration"
 
 # Alembic run migration
