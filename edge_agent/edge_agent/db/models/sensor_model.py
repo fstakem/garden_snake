@@ -21,8 +21,8 @@ class SensorModel(BaseModel, Serializer):
     model = db.Column(db.String)
 
     # Relationships
-    sensors = db.relationship("Sensor", back_populates="sensor_model")
-    measurements = db.relationship("Measurement", back_populates="sensor_model")
+    sensors = db.relationship("Sensor", back_populates="model")
+    measurements = db.relationship("Measurement", back_populates="model")
 
     __tablename__ = 'sensor_model'
 

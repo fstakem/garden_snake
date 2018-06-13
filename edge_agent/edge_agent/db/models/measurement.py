@@ -19,11 +19,12 @@ class Measurement(BaseModel, Serializer):
     id = db.Column(db.Integer, primary_key=True)
     sensor_model_id = db.Column(db.Integer, db.ForeignKey('sensor_model.id'))
     name = db.Column(db.String)
+    measurement_type = db.Column(db.String)
     description = db.Column(db.String)
     units = db.Column(db.String)
 
     # Relationships
-    sensor_model = db.relationship("SensorModel", back_populates="measurements")
+    model = db.relationship("SensorModel", back_populates="measurements")
 
     __tablename__ = 'measurement'
 

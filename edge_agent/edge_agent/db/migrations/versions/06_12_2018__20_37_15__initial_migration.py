@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 8afd057da01a
+Revision ID: 561d1bf91e28
 Revises: 
-Create Date: 2018-06-12 18:43:33.647689
+Create Date: 2018-06-12 20:37:15.225020
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '8afd057da01a'
+revision = '561d1bf91e28'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -97,6 +97,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('sensor_model_id', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(), nullable=True),
+    sa.Column('measurement_type', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('units', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['sensor_model_id'], ['sensor_model.id'], ),
@@ -111,7 +112,6 @@ def upgrade():
     )
     op.create_table('sensor_board',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('version', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['device.id'], ),

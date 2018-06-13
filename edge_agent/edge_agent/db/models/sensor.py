@@ -24,8 +24,8 @@ class Sensor(Collector):
     calibration = db.Column(JSONB)
 
     # Relationships
-    sensor_board = db.relationship("SensorBoard", back_populates="sensors")
-    sensor_model = db.relationship("SensorModel", back_populates="sensors")
+    board = db.relationship("SensorBoard", back_populates="sensors")
+    model = db.relationship("SensorModel", back_populates="sensors")
 
     __tablename__ = 'sensor'
 
