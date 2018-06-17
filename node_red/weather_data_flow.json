@@ -1,0 +1,147 @@
+[
+    {
+        "id": "7d50f383.536964",
+        "type": "tab",
+        "label": "Weather Data",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "50b0e808.80463",
+        "type": "debug",
+        "z": "7d50f383.536964",
+        "name": "weather data debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 600,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "5fd0c17d.ff81c",
+        "type": "wunderground",
+        "z": "7d50f383.536964",
+        "name": "",
+        "lon": "-84.3674710",
+        "lat": "33.8509120",
+        "city": "",
+        "country": "",
+        "x": 360,
+        "y": 120,
+        "wires": [
+            [
+                "50b0e808.80463",
+                "d866ffc.f9d958"
+            ]
+        ]
+    },
+    {
+        "id": "55f85439.b4ea8c",
+        "type": "comment",
+        "z": "7d50f383.536964",
+        "name": "General Weather Pipeline",
+        "info": "",
+        "x": 150,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "3750e94f.bff5c6",
+        "type": "inject",
+        "z": "7d50f383.536964",
+        "name": "5 min interval",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "300",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 120,
+        "wires": [
+            [
+                "5fd0c17d.ff81c"
+            ]
+        ]
+    },
+    {
+        "id": "d866ffc.f9d958",
+        "type": "function",
+        "z": "7d50f383.536964",
+        "name": "create sample insert",
+        "func": "let new_data = {};\nnew_data.payload = msg.payload;\nnew_data.location = msg.location;\n//new_data.data = msg.data;\n//new_data.current = msg.data.current_observation;\nlet timestamp = JSON.stringify(msg.time).slice(1, -2);\nnode.log(\"Parsed timestamp: \" + timestamp);\nlet valueStr = JSON.stringify(new_data).replace(/\"\"/g,'\\\"');\n\nlet insert = `insert into sample(collector_id, timestamp, data) values (4, to_timestamp('${timestamp}', 'yyyy-mm-ddThh24:mi:ss.ms'), '${valueStr}')`;\nmsg.payload = insert;\n\nnode.log(\"Query: \" + insert)\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 120,
+        "wires": [
+            [
+                "cec4edce.ae6788",
+                "e114ee48.679918"
+            ]
+        ],
+        "inputLabels": [
+            "data_input"
+        ],
+        "outputLabels": [
+            "select_input"
+        ]
+    },
+    {
+        "id": "cec4edce.ae6788",
+        "type": "debug",
+        "z": "7d50f383.536964",
+        "name": "insert debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 850,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e114ee48.679918",
+        "type": "postgres",
+        "z": "7d50f383.536964",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "insert sample",
+        "output": true,
+        "outputs": 1,
+        "x": 860,
+        "y": 120,
+        "wires": [
+            [
+                "26a6fd6a.c246e2"
+            ]
+        ]
+    },
+    {
+        "id": "26a6fd6a.c246e2",
+        "type": "debug",
+        "z": "7d50f383.536964",
+        "name": "db insert debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1080,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "e5a43c00.b2aa9",
+        "type": "postgresdb",
+        "z": "",
+        "hostname": "db",
+        "port": "5432",
+        "db": "iot_data",
+        "ssl": false
+    }
+]

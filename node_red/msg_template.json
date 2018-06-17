@@ -1,7 +1,163 @@
 {
-    "id": "",
+    "board_id": "",
     "timestamp": "",
-    "percent_dry": "",
-    "temperature": "",
-    "humidity": ""
+    "sensors": [
+        {
+            "sensor_id": "",
+            "value": "",
+            "type": "percent_dry"
+        },
+        {
+            "sensor_id": "",
+            "value": "",
+            "type": "temperature"
+        },
+        {
+            "sensor_id": "",
+            "value": "",
+            "type": "humidity"
+        }
+    ]
 }
+
+# Old
+{
+    "id": "cfe16764-2aa9-4c79-95c7-d8f97c125fb6",
+    "timestamp": "01-01-01T01:01:01Z",
+    "percent_dry": ".85",
+    "temperature": "79.5",
+    "humidity": "32"
+}
+
+
+# Example
+{
+    "board_id": "9cf0bab7-d3e6-4a3e-a5fe-9dfde5edc842",
+    "timestamp": "2018-06-12T01:45:30.250Z",
+    "sensors": [
+        {
+            "sensor_id": "658ad87f-79f2-4c8c-9ae4-43a4a72f6253",
+            "value": ".85",
+            "type": "percent_dry"
+        },
+        {
+            "sensor_id": "98258788-9fbb-44e5-85cd-f8d5723f379f",
+            "value": "79.5",
+            "type": "temperature"
+        },
+        {
+            "sensor_id": "086975c5-623f-42ef-8620-7ff90d9bafd8",
+            "value": "32",
+            "type": "humidity"
+        }
+    ]
+}
+
+Temp uuid: 98258788-9fbb-44e5-85cd-f8d5723f379f
+Humid uuid: 086975c5-623f-42ef-8620-7ff90d9bafd8
+Soil sensor uuid: 658ad87f-79f2-4c8c-9ae4-43a4a72f6253
+Board uuid: 9cf0bab7-d3e6-4a3e-a5fe-9dfde5edc842
+Wunderground uuid: 046979ce-efcb-42cc-ba55-9faa5f5e3f62
+
+
+
+-----------------------------------------------------------------------------------------------------------------
+# Old select
+let payload = JSON.parse(msg.payload);
+node.log("New mqtt msg: " + JSON.stringify(payload));
+
+let collector_uuid = payload.id;
+node.log("Found collector id: " + collector_uuid);
+
+msg.data = payload;
+let select = `select id from collector where uuid = '${collector_uuid}';`
+msg.payload = select;
+node.log('Query: ' + select);
+
+return msg;
+
+-----------------------------------------------------------------------------------------------------------------
+# Select
+let payload = JSON.parse(msg.payload);
+node.log("New mqtt msg: " + JSON.stringify(payload));
+
+board_id = payload.board_id
+node.log("Found board id: " + board_id);
+
+let collector_ids = [];
+for(var i = 0; i < payload.sensors.length; i++) {
+    collector_ids.push(payload.sensors[i].sensor_id);
+}
+node.log("Found collector ids: " + collector_ids);
+
+// select * from collector where uuid in ( '560bea59-b6bf-4120-b3b1-3452af30ab04', '7764b69c-3636-4be2-9659-87ba506d8ae5');
+
+msg.data = payload;
+let uuids_str = '';
+for(var i = 0; i < collector_ids.length; i++) {
+    uuids_str += `'${collector_ids[i]}'`;
+
+    if(i < collector_ids.length - 1) {
+        uuids_str += ", ";
+    }
+}
+
+let select = `select id from collector where uuid in (${uuids_str});`
+msg.payload = select;
+node.log('Query: ' + select);
+
+return msg;
+
+
+-----------------------------------------------------------------------------------------------------------------
+# Old insert
+let data = msg.data;
+let collector_id = msg.payload[0].id;
+let dataStr = JSON.stringify(data).replace(/""/g,'\"');
+let insert = `insert into sample(collector_id, data) values (${collector_id}, '${dataStr}')`;
+msg.payload = insert;
+01-01-01T01:01:01Z
+node.log("Query: " + insert)
+return msg;
+
+
+-----------------------------------------------------------------------------------------------------------------
+# Insert
+let data = msg.data;
+let payload = msg.payload;
+let valueStr = '';
+let timestamp = JSON.stringify(data.timestamp).slice(1, -2);
+for(var i = 0; i < data.sensors.length; i++) {
+    let value = {};
+    value.value = data.sensors[i].value;
+    let dataStr = JSON.stringify(value).replace(/""/g,'\"');
+    valueStr += `(${payload[i].id}, to_timestamp('${timestamp}', 'yyyy-mm-ddThh24:mi:ss.ms'), '${dataStr}')`;
+
+    if(i < data.sensors.length - 1) {
+        valueStr += ", ";
+    }
+}
+
+let insert = `insert into sample(collector_id, timestamp, data) values ${valueStr}`;
+msg.payload = insert;
+
+node.log("Query: " + insert)
+return msg;
+
+
+-----------------------------------------------------------------------------------------------------------------
+# Insert
+let new_data = {};
+new_data.payload = msg.payload;
+new_data.location = msg.location;
+//new_data.data = msg.data;
+//new_data.current = msg.data.current_observation;
+let timestamp = JSON.stringify(msg.time).slice(1, -2);
+node.log("Parsed timestamp: " + timestamp);
+let valueStr = JSON.stringify(new_data).replace(/""/g,'\"');
+
+let insert = `insert into sample(collector_id, timestamp, data) values (4, to_timestamp('${timestamp}', 'yyyy-mm-ddThh24:mi:ss.ms'), '${valueStr}')`;
+msg.payload = insert;
+
+node.log("Query: " + insert)
+return msg;

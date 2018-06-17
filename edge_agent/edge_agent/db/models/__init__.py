@@ -2,13 +2,11 @@ from .api import *
 
 from .app import App
 from .cloud_source import CloudSource
-from .cloud_var import CloudVar
 from .collector import Collector
 from .device import Device
 from .gateway import Gateway
 from .installed_app import InstalledApp
 from .link import Link
-from .measurement import Measurement
 from .sample import Sample
 from .sensor import Sensor
 from .sensor_board import SensorBoard

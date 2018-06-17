@@ -19,6 +19,7 @@ class Collector(BaseModel, Serializer):
     
     # Properties
     id = db.Column(db.Integer, primary_key=True)
+    uuid = db.Column(db.String(36), nullable=False, unique=True)
     type = db.Column(db.String)
 
     # Relationships

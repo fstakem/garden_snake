@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 561d1bf91e28
+Revision ID: 1b13127dc17c
 Revises: 
-Create Date: 2018-06-12 20:37:15.225020
+Create Date: 2018-06-17 17:13:48.636320
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '561d1bf91e28'
+revision = '1b13127dc17c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,31 +29,24 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('app_id')
     )
-    op.create_table('cloud_source',
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('url', sa.String(), nullable=True),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('collector',
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('uuid', sa.String(length=36), nullable=False),
     sa.Column('type', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('uuid')
     )
     op.create_table('device',
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('device_id', sa.String(length=36), nullable=False),
+    sa.Column('uuid', sa.String(length=36), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('type', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('device_id')
+    sa.UniqueConstraint('uuid')
     )
     op.create_table('sensor_model',
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -61,15 +54,16 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('model', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('cloud_var',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('cloud_source_id', sa.Integer(), nullable=True),
-    sa.Column('name', sa.String(), nullable=True),
+    sa.Column('measurement_type', sa.String(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('units', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['cloud_source_id'], ['cloud_source.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('cloud_source',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('url', sa.String(), nullable=True),
+    sa.Column('name', sa.String(), nullable=True),
+    sa.Column('description', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['collector.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -91,21 +85,10 @@ def upgrade():
     sa.ForeignKeyConstraint(['device_id'], ['device.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('measurement',
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('sensor_model_id', sa.Integer(), nullable=True),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('measurement_type', sa.String(), nullable=True),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.Column('units', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['sensor_model_id'], ['sensor_model.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('sample',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('collector_id', sa.Integer(), nullable=True),
+    sa.Column('timestamp', sa.DateTime(), nullable=True),
     sa.Column('data', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
     sa.ForeignKeyConstraint(['collector_id'], ['collector.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -150,13 +133,11 @@ def downgrade():
     op.drop_table('link')
     op.drop_table('sensor_board')
     op.drop_table('sample')
-    op.drop_table('measurement')
     op.drop_table('installed_app')
     op.drop_table('gateway')
-    op.drop_table('cloud_var')
+    op.drop_table('cloud_source')
     op.drop_table('sensor_model')
     op.drop_table('device')
     op.drop_table('collector')
-    op.drop_table('cloud_source')
     op.drop_table('app')
     # ### end Alembic commands ###

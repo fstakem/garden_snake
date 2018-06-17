@@ -17,7 +17,7 @@ class Device(BaseModel, Serializer):
     
     # Properties
     id = db.Column(db.Integer, primary_key=True)
-    device_id = db.Column(db.String(36), nullable=False, unique=True)
+    uuid = db.Column(db.String(36), nullable=False, unique=True)
     name = db.Column(db.String)
     type = db.Column(db.String)
 

@@ -20,6 +20,7 @@ class Sample(db.Model, Serializer):
     # Properties
     id = db.Column(db.Integer, primary_key=True)
     collector_id = db.Column(db.Integer, db.ForeignKey('collector.id'))
+    timestamp = db.Column(db.DateTime)
     data = db.Column(JSONB)
 
     # Relationships

@@ -25,13 +25,11 @@ from edge_agent.database import sql_db
 # Models
 from edge_agent.db.models.app import App
 from edge_agent.db.models.cloud_source import CloudSource
-from edge_agent.db.models.cloud_var import CloudVar
 from edge_agent.db.models.collector import Collector
 from edge_agent.db.models.device import Device
 from edge_agent.db.models.gateway import Gateway
 from edge_agent.db.models.installed_app import InstalledApp
 from edge_agent.db.models.link import Link
-from edge_agent.db.models.measurement import Measurement
 from edge_agent.db.models.sample import Sample
 from edge_agent.db.models.sensor import Sensor
 from edge_agent.db.models.sensor_board import SensorBoard
@@ -39,58 +37,72 @@ from edge_agent.db.models.sensor_model import SensorModel
 
 # Helper functions
 def create_garden_collector(session):
-    name = 'cheap humidity'
-    meas_type = 'absolute humidity'
-    description = 'A cheap air humidity measurement'
-    units = 'gram per cubic meter'
-    humid_meas = Measurement(name=name, measurement_type=meas_type, description=description, units=units)
 
-    name = 'cheap temperature'
+    # Temperature
+    name = 'cheap temp sensor'
+    model = 'dht22'
     meas_type = 'temperature'
     description = 'A cheap air temperature measurement'
     units = 'farenheit'
-    temp_meas = Measurement(name=name,  measurement_type=meas_type, description=description, units=units)
+    temp_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
 
-    name = 'cheap soil dampness'
+    uuid_str = str(uuid.uuid4())
+    temp_sensor = Sensor(uuid=uuid_str)
+    temp_sensor.model = temp_model
+    print('Temp uuid: {}'.format(uuid_str))
+
+    # Humidity
+    name = 'cheap humidity sensor'
+    model = 'dht22'
+    meas_type = 'humidity'
+    description = 'A cheap air humidity measurement'
+    units = 'gram per cubic meter'
+    humid_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
+
+    uuid_str = str(uuid.uuid4())
+    humid_sensor = Sensor(uuid=uuid_str)
+    humid_sensor.model = humid_model
+    print('Humid uuid: {}'.format(uuid_str))
+
+    # Soil dryness
+    name = 'cheap soil sensor'
+    model = 'SEN0193'
     meas_type = 'percent dry'
     description = 'A cheap soil dampness measurement'
     units = 'percent'
-    soil_moist_meas = Measurement(name=name,  measurement_type=meas_type, description=description, units=units)
+    soil_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
 
-    name = 'cheap temp/humid sensor'
-    model = 'dht22'
-    temp_humid_model = SensorModel(name=name, model=model)
-    temp_humid_model.measurements.append(humid_meas)
-    temp_humid_model.measurements.append(temp_meas)
+    uuid_str = str(uuid.uuid4())
+    soil_sensor = Sensor(uuid=uuid_str)
+    soil_sensor.model = soil_model
+    print('Soil sensor uuid: {}'.format(uuid_str))
 
-    temp_humid_sensor = Sensor()
-    temp_humid_sensor.model = temp_humid_model
-
-    name = 'cheap soil sensor'
-    model = 'SEN0193'
-    soil_model = SensorModel(name=name, model=model)
-    soil_model.measurements.append(soil_moist_meas)
-
-    soil_sensor = Sensor()
-    soil_sensor.model = temp_humid_model
-
-    device_id = str(uuid.uuid4())
+    # Board
+    uuid_str = str(uuid.uuid4())
     name = 'garden sensor'
     description = 'Sensor to collect data from the garden'
     version = '1_0_0'
-    sensor_board = SensorBoard(device_id=device_id, name=name, description=description, version=version)
-    sensor_board.sensors.append(temp_humid_sensor)
+    sensor_board = SensorBoard(uuid=uuid_str, name=name, description=description, version=version)
+    sensor_board.sensors.append(temp_sensor)
+    sensor_board.sensors.append(humid_sensor)
     sensor_board.sensors.append(soil_sensor)
+    print('Board uuid: {}'.format(uuid_str))
 
+    uuid_str = str(uuid.uuid4())
+    url = 'http://api.wunderground.com/api'
+    name = 'wunderground'
+    description = 'Weather underground atlanta weather'
+    cloud_source = CloudSource(uuid=uuid_str, url=url, name=name, description=description)
+    print('Wunderground uuid: {}'.format(uuid_str))
 
-    session.add(humid_meas)
-    session.add(temp_meas)
-    session.add(soil_moist_meas)
-    session.add(temp_humid_model)
+    session.add(temp_model)
+    session.add(humid_model)
     session.add(soil_model)
-    session.add(temp_humid_sensor)
+    session.add(temp_sensor)
+    session.add(humid_sensor)
     session.add(soil_sensor)
     session.add(sensor_board)
+    session.add(cloud_source)
 
     session.commit()
 

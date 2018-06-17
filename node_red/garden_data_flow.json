@@ -1,0 +1,250 @@
+[
+    {
+        "id": "4d34aed9.4034d",
+        "type": "tab",
+        "label": "Garden Data",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "45a3f663.36b4f8",
+        "type": "mqtt out",
+        "z": "4d34aed9.4034d",
+        "name": "garden publisher",
+        "topic": "garden/data",
+        "qos": "",
+        "retain": "",
+        "broker": "73e15515.7d6e14",
+        "x": 350,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "daa4f377.e0bd98",
+        "type": "inject",
+        "z": "4d34aed9.4034d",
+        "name": "test data",
+        "topic": "",
+        "payload": "{\"board_id\":\"9cf0bab7-d3e6-4a3e-a5fe-9dfde5edc842\",\"timestamp\":\"2018-06-12T01:45:30.250Z\",\"sensors\":[{\"sensor_id\":\"658ad87f-79f2-4c8c-9ae4-43a4a72f6253\",\"value\":\".85\",\"type\":\"percent_dry\"},{\"sensor_id\":\"98258788-9fbb-44e5-85cd-f8d5723f379f\",\"value\":\"79.5\",\"type\":\"temperature\"},{\"sensor_id\":\"086975c5-623f-42ef-8620-7ff90d9bafd8\",\"value\":\"32\",\"type\":\"humidity\"}]}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "45a3f663.36b4f8"
+            ]
+        ]
+    },
+    {
+        "id": "e5ca2ebf.829b18",
+        "type": "comment",
+        "z": "4d34aed9.4034d",
+        "name": "Test: Publish Garden Data",
+        "info": "",
+        "x": 170,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "a50c9fa9.e2eca",
+        "type": "comment",
+        "z": "4d34aed9.4034d",
+        "name": "Garden Data Pipeline",
+        "info": "",
+        "x": 160,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "27275b56.b48bf4",
+        "type": "function",
+        "z": "4d34aed9.4034d",
+        "name": "create collector select",
+        "func": "let payload = JSON.parse(msg.payload);\nnode.log(\"New mqtt msg: \" + JSON.stringify(payload));\n\nboard_id = payload.board_id\nnode.log(\"Found board id: \" + board_id);\n\nlet collector_ids = [];\nfor(var i = 0; i < payload.sensors.length; i++) {\n    collector_ids.push(payload.sensors[i].sensor_id);\n}\nnode.log(\"Found collector ids: \" + collector_ids);\n\n// select * from collector where uuid in ( '560bea59-b6bf-4120-b3b1-3452af30ab04', '7764b69c-3636-4be2-9659-87ba506d8ae5');\n\nmsg.data = payload;\nlet uuids_str = '';\nfor(var i = 0; i < collector_ids.length; i++) {\n    uuids_str += `'${collector_ids[i]}'`;\n\n    if(i < collector_ids.length - 1) {\n        uuids_str += \", \";\n    }\n}\n\nlet select = `select id from collector where uuid in (${uuids_str});`\nmsg.payload = select;\nnode.log('Query: ' + select);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 360,
+        "y": 280,
+        "wires": [
+            [
+                "a12f819f.d094f",
+                "8d1a32fe.3de118"
+            ]
+        ]
+    },
+    {
+        "id": "8d1a32fe.3de118",
+        "type": "postgres",
+        "z": "4d34aed9.4034d",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "get collector id",
+        "output": true,
+        "outputs": 1,
+        "x": 600,
+        "y": 280,
+        "wires": [
+            [
+                "b17e35a4.8be578",
+                "7056cfa6.07d73"
+            ]
+        ]
+    },
+    {
+        "id": "7056cfa6.07d73",
+        "type": "function",
+        "z": "4d34aed9.4034d",
+        "name": "create sample insert",
+        "func": "let data = msg.data;\nlet payload = msg.payload;\nlet valueStr = '';\nlet timestamp = JSON.stringify(data.timestamp).slice(1, -2);\nfor(var i = 0; i < data.sensors.length; i++) {\n    let value = {};\n    value.value = data.sensors[i].value;\n    let dataStr = JSON.stringify(value).replace(/\"\"/g,'\\\"');\n    valueStr += `(${payload[i].id}, to_timestamp('${timestamp}', 'yyyy-mm-ddThh24:mi:ss.ms'), '${dataStr}')`;\n\n    if(i < data.sensors.length - 1) {\n        valueStr += \", \";\n    }\n}\n\nlet insert = `insert into sample(collector_id, timestamp, data) values ${valueStr}`;\nmsg.payload = insert;\n\nnode.log(\"Query: \" + insert)\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 840,
+        "y": 280,
+        "wires": [
+            [
+                "5b5fbe7f.c4ff8",
+                "74f05ed.a2a4d2"
+            ]
+        ],
+        "inputLabels": [
+            "data_input"
+        ],
+        "outputLabels": [
+            "select_input"
+        ]
+    },
+    {
+        "id": "74f05ed.a2a4d2",
+        "type": "postgres",
+        "z": "4d34aed9.4034d",
+        "postgresdb": "e5a43c00.b2aa9",
+        "name": "insert sample",
+        "output": true,
+        "outputs": 1,
+        "x": 1080,
+        "y": 280,
+        "wires": [
+            [
+                "3f094958.2412ae"
+            ]
+        ]
+    },
+    {
+        "id": "987badde.a51a18",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "input debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 330,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "a12f819f.d094f",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "select debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 590,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "b17e35a4.8be578",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "db select debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 820,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "5b5fbe7f.c4ff8",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "insert debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1070,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "3f094958.2412ae",
+        "type": "debug",
+        "z": "4d34aed9.4034d",
+        "name": "db insert debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "x": 1320,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "c95fa84b.f2db7",
+        "type": "mqtt in",
+        "z": "4d34aed9.4034d",
+        "name": "",
+        "topic": "garden/data",
+        "qos": "2",
+        "broker": "73e15515.7d6e14",
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "27275b56.b48bf4",
+                "987badde.a51a18"
+            ]
+        ]
+    },
+    {
+        "id": "73e15515.7d6e14",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "mosquitto",
+        "broker": "broker",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    },
+    {
+        "id": "e5a43c00.b2aa9",
+        "type": "postgresdb",
+        "z": "",
+        "hostname": "db",
+        "port": "5432",
+        "db": "iot_data",
+        "ssl": false
+    }
+]

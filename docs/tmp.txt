@@ -1,0 +1,90 @@
+# Msg data format
+"{  
+    "id":"1",
+    "timestamp":"01-01-01T01:01:01Z",
+    "percent_dry":".85",
+    "temperature":"76.5",
+    "humidity":"32"
+}"
+
+var insert = "insert into sample(data) values ('{\"fred\": \"cool\"}');"
+msg.payload = insert;
+return msg;
+
+
+# Test insert
+insert into sample(data) values ('{  
+    "id":"1",
+    "timestamp":"01-01-01T01:01:01Z",
+    "percent_dry":".85",
+    "temperature":"76.5",
+    "humidity":"32"
+}')
+
+# Test full insert
+insert into sample(collector_id, data) values (1,
+'{  
+    "id":"1",
+    "timestamp":"01-01-01T01:01:01Z",
+    "percent_dry":".85",
+    "temperature":"76.5",
+    "humidity":"32"
+}')
+
+# JS insert
+var insert = "insert into sample(collector_id, data) values (1,
+'{  
+    \"id\":\"1\",
+    \"timestamp\":\"01-01-01T01:01:01Z\",
+    \"percent_dry\":\".85\",
+    \"temperature\":\"76.5\",
+    \"humidity\":\"32\"
+}')"
+
+
+
+
+# Input payload
+{
+    "collector_id": 1,
+    "data": {
+        "id":"1",
+        "timestamp":"01-01-01T01:01:01Z",
+        "percent_dry":".85",
+        "temperature":"79.5",
+        "humidity":"32"
+    }
+}
+
+select id from collector where uuid = 'cfe16764-2aa9-4c79-95c7-d8f97c125fb6';
+
+
+
+
+# Nodered code first attempt
+# ------------------------------------------------------------------------------------------------------
+# Select 
+let payload = JSON.parse(msg.payload);
+node.log("New mqtt msg: " + JSON.stringify(payload));
+
+let collector_uuid = payload.id;
+node.log("Found collector id: " + collector_uuid);
+
+msg.data = payload;
+let select = `select id from collector where uuid = '${collector_uuid}';`
+msg.payload = select;
+node.log('Query: ' + select);
+
+return msg;
+
+
+# Insert
+let data = msg.data;
+let collector_id = msg.payload[0].id;
+let dataStr = JSON.stringify(data).replace(/""/g,'\"');
+let insert = `insert into sample(collector_id, data) values (${collector_id}, '${dataStr}')`;
+msg.payload = insert;
+
+node.log("Query: " + insert)
+return msg;
+
