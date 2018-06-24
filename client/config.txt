@@ -1,0 +1,4 @@
+Nodes
+595d552f-397e-4119-990b-252068f8ff80 iceriver
+4219ec42-2685-48f4-88b5-f418b0adff0b cliffhurst
+3715129c-bbbd-4d1c-b5b5-952feabcf43e stonehollow
