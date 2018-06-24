@@ -20,11 +20,7 @@ Garden sensors with sensor, edge, and cloud components
 18. Sound sensors for higher rate data is also planned but client side work needs to be done
 
 TODO
-1. Create new tables for generic weather data
-2. Redo tables for insert of raw samples
-3. Finish node red flow for insertion
-4. Setup new computer with docker and run the docker compose
-5. Finish sensor hardware
-6. Finish power supply hardware
-7. Deploy system
-8. Research new sensors and put together prototype
+1. Setup new computer with docker and run the docker compose
+2. Finish power supply hardware
+3. Deploy system
+4. Research new sensors and put together prototype
