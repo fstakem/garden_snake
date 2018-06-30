@@ -5,15 +5,15 @@
     },
     "sensors": {
         "soil": {
-            "id": "",
+            "id": "48fd5cee-eca2-49f8-9f1e-ca0e9283d4aa",
             "min_moisture": 400,
             "max_moisture": 778
         },
         "temp": {
-            "id": ""
+            "id": "eba61d5f-e29e-416a-a207-bf21f1af5b04"
         },
         "humid": {
-            "id": ""
+            "id": "8aca7265-fe77-4cbc-af7f-481ebb39a283"
         }
     },
     "mqtt": {
@@ -25,7 +25,7 @@
         "wait_time_sec": 2
     },
     "board": {
-        "id": "",
+        "id": "595d552f-397e-4119-990b-252068f8ff80",
         "moisture_pin_num": 0,
         "temp_humid_pin_num": 5
     },

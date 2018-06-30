@@ -9,6 +9,7 @@
 
 # Libraries
 import os
+import json
 from pathlib import Path
 import sys
 import ipdb
@@ -36,75 +37,39 @@ from edge_agent.db.models.sensor_board import SensorBoard
 from edge_agent.db.models.sensor_model import SensorModel
 
 # Helper functions
-def create_garden_collector(session):
+def load_fixtures(fixture_path):
+    with open('data.json') as f:
+        data = json.load(fixture_path)
 
-    # Temperature
-    name = 'cheap temp sensor'
-    model = 'dht22'
-    meas_type = 'temperature'
-    description = 'A cheap air temperature measurement'
-    units = 'farenheit'
-    temp_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
+    models = {}
 
-    uuid_str = str(uuid.uuid4())
-    temp_sensor = Sensor(uuid=uuid_str)
-    temp_sensor.model = temp_model
-    print('Temp uuid: {}'.format(uuid_str))
+    for m in data['sensor_models']:
+        model = SensorModel(name=m['name'], model=m['model'], measurement_type=m['meas_type'], description=m['description'], units=m['units'])
+        models[m['id']] = model
+        session.add(model)
 
-    # Humidity
-    name = 'cheap humidity sensor'
-    model = 'dht22'
-    meas_type = 'humidity'
-    description = 'A cheap air humidity measurement'
-    units = 'gram per cubic meter'
-    humid_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
+    for b in data['boards']:
+        board = SensorBoard(uuid=b['id'], name=b['name'], description=b['description'], version=b['version'])
+        print('Board uuid: {}'.format(b['id']))
 
-    uuid_str = str(uuid.uuid4())
-    humid_sensor = Sensor(uuid=uuid_str)
-    humid_sensor.model = humid_model
-    print('Humid uuid: {}'.format(uuid_str))
+        for s in b['sensors']:
+            sensor = Sensor(uuid=s['id'])
+            print('Sensor uuid: {}'.format(s['id']))
 
-    # Soil dryness
-    name = 'cheap soil sensor'
-    model = 'SEN0193'
-    meas_type = 'percent dry'
-    description = 'A cheap soil dampness measurement'
-    units = 'percent'
-    soil_model = SensorModel(name=name, model=model, measurement_type=meas_type, description=description, units=units)
+            sensor.model = models[s['model_id']]
+            board.sensors.append(sensor)
+            session.add(sensor)
 
-    uuid_str = str(uuid.uuid4())
-    soil_sensor = Sensor(uuid=uuid_str)
-    soil_sensor.model = soil_model
-    print('Soil sensor uuid: {}'.format(uuid_str))
+        session.add(board)
 
-    # Board
-    uuid_str = str(uuid.uuid4())
-    name = 'garden sensor'
-    description = 'Sensor to collect data from the garden'
-    version = '1_0_0'
-    sensor_board = SensorBoard(uuid=uuid_str, name=name, description=description, version=version)
-    sensor_board.sensors.append(temp_sensor)
-    sensor_board.sensors.append(humid_sensor)
-    sensor_board.sensors.append(soil_sensor)
-    print('Board uuid: {}'.format(uuid_str))
+    for c in data['cloud_sources']:
+        cloud = CloudSource(uuid=c['id'], url=c['url'], name=c['name'], description=c['description'])
+        print('Cloud uuid: {}'.format(c['id']))
 
-    uuid_str = str(uuid.uuid4())
-    url = 'http://api.wunderground.com/api'
-    name = 'wunderground'
-    description = 'Weather underground atlanta weather'
-    cloud_source = CloudSource(uuid=uuid_str, url=url, name=name, description=description)
-    print('Wunderground uuid: {}'.format(uuid_str))
-
-    session.add(temp_model)
-    session.add(humid_model)
-    session.add(soil_model)
-    session.add(temp_sensor)
-    session.add(humid_sensor)
-    session.add(soil_sensor)
-    session.add(sensor_board)
-    session.add(cloud_source)
+        session.add(cloud)
 
     session.commit()
+    
 
 def create_random_sample(data_vars=None, collector=None):
     if not data_vars:
@@ -126,6 +91,7 @@ db_str = app_config['db_connect_str']
 engine = create_engine(db_str)
 Session = sessionmaker(bind=engine)
 session = Session()
+fixture_path = '/home/fstakem/projects/garden_snake/edge_agent/edge_agent/fixtures/garden_6_30_18.json'
 
 ipdb.set_trace()
 

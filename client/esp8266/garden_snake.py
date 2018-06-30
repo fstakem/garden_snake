@@ -20,6 +20,7 @@ import ntptime
 # ======================| START |======================|
 CONFIG_PATH = '/config.json'
 CMD_MSG_RCVD = False
+config = load_config(CONFIG_PATH)
 # ======================| END |======================|
 
 
@@ -32,8 +33,8 @@ def load_config(path):
     except (OSError, ValueError):
         print("Could not load " + path)
 
-    diff = config['sensors']['max_moisture'] - config['sensors']['min_moisture']
-    config['sensors']['diff_moisture'] = diff
+    diff = config['sensors']['soil']['max_moisture'] - config['sensors']['soil']['min_moisture']
+    config['sensors']['soil']['diff_moisture'] = diff
 
     if config:
         save_config(config, path)
@@ -72,8 +73,8 @@ def get_mac():
     
     return mac
 
-def mqtt_connect(name, ip):
-    client = MQTTClient(name, ip)
+def mqtt_connect(ip):
+    client = MQTTClient(config['board']['id'], config['mqtt']['ip'])
     client.connect()
 
     return client
@@ -84,9 +85,10 @@ def setup(moisture_pin_num, temp_humid_pin_num):
 
     return (moisture_pin, temp_humid_pin)
 
-def get_moisture_data(moisture_pin, min_reading, reading_range):
-    
+def get_moisture_data(moisture_pin):
     moisture_reading = moisture_pin.read()
+    min_reading = config['sensors']['soil']['min_moisture']
+    reading_range = config['sensors']['soil']['diff_moisture']
     pct_dry = ((moisture_reading - min_reading) / reading_range) * 100
 
     return pct_dry
@@ -106,16 +108,56 @@ def get_timestamp(update=False):
     ts = localtime()
     timestamp_str = '{}-{}-{}T{}:{}:{}Z'.format(ts[0], ts[1], ts[2], ts[3], ts[4], ts[5])
 
-    #2018-04-11T13:22:39+00:00
     return timestamp_str
 
-def create_msg(id, pct_dry, temp, humid):
+def create_msg(pct_dry, temp, humid):
+    """
+    Msg format:
+    {
+        "board_id": "9cf0bab7-d3e6-4a3e-a5fe-9dfde5edc842",
+        "timestamp": "2018-06-12T01:45:30.250Z",
+        "sensors": [
+            {
+                "sensor_id": "658ad87f-79f2-4c8c-9ae4-43a4a72f6253",
+                "value": ".85",
+                "type": "percent_dry"
+            },
+            {
+                "sensor_id": "98258788-9fbb-44e5-85cd-f8d5723f379f",
+                "value": "79.5",
+                "type": "temperature"
+            },
+            {
+                "sensor_id": "086975c5-623f-42ef-8620-7ff90d9bafd8",
+                "value": "32",
+                "type": "humidity"
+            }
+        ]
+    }
+    """
     msg = {}
-    msg['id'] = id
+    msg['board_id'] = config['board']['id']
     msg['timestamp'] = get_timestamp(True)
-    msg['percent_dry'] = pct_dry
-    msg['temperature'] = temp
-    msg['humidity'] = humid
+    msg['sensors'] = []
+
+    sensor = {}
+    sensor['sensor_id'] = config['sensors']['soil']['id']
+    sensor['value'] = pct_dry
+    sensor['type'] = 'percent_dry'
+    msg['sensors'].append(sensor)
+
+    sensor = {}
+    sensor['sensor_id'] = config['sensors']['temp']['id']
+    sensor['value'] = temp
+    sensor['type'] = 'temperature'
+    msg['sensors'].append(sensor)
+
+    sensor = {}
+    sensor['sensor_id'] = config['sensors']['humid']['id']
+    sensor['value'] = humid
+    sensor['type'] = 'humidity'
+    msg['sensors'].append(sensor)
+
     msg_bytes = bytes(str(msg), 'utf-8')
 
     return msg_bytes
@@ -124,7 +166,7 @@ def handle_msg(topic, msg):
     CMD_MSG_RCVD = False
     print(topic, msg)
 
-def setup(config):
+def setup():
     # wifi
     name = config['board']['moisture_pin_num']
     passwd = config['board']['moisture_pin_num']
@@ -137,34 +179,25 @@ def setup(config):
 
     return (moisture_pin, temp_humid_pin)
 
-def run(config, unique_id, moisture_pin, temp_humid_pin):
+def run(moisture_pin, temp_humid_pin):
     mqtt_enabled = config['mqtt']['enabled']
+
+    if mqtt_enabled:
+        data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
+        cmd_topic = bytes(config['mqtt']['cmd_topic'], 'utf-8')
+        wait_time_sec = config['mqtt']['wait_time_sec']
+
     client = None
 
     try:
-        # moisture sensor
-        min_reading = config['sensors']['min_moisture']
-        reading_range = config['sensors']['diff_moisture']
-        pct_dry = get_moisture_data(moisture_pin, min_reading, reading_range)
-
-        # temp/humid sensor
+        pct_dry = get_moisture_data(moisture_pin)
         temp, humid = get_temp_humid_data(temp_humid_pin)
-
-        # mqtt
-        tag = config['mqtt']['tag']
-        id = '{}__{}'.format(tag, unique_id)
-        
-        msg = create_msg(id, pct_dry, temp, humid)
+        msg = create_msg(pct_dry, temp, humid)
         print(msg)
 
         if mqtt_enabled:
             print('Publishing...')
-            ip = config['mqtt']['ip']
-            data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
-            cmd_topic = bytes(config['mqtt']['cmd_topic'], 'utf-8')
-            wait_time_sec = config['mqtt']['wait_time_sec']
-
-            client = mqtt_connect(id, ip)
+            client = mqtt_connect()
             client.set_callback(handle_msg)
             client.subscribe(cmd_topic)
             client.publish(data_topic, msg)
@@ -200,17 +233,15 @@ def main():
     if machine.reset_cause() == machine.DEEPSLEEP_RESET:
         print('Woke from a deep sleep...')
 
-    config = load_config(CONFIG_PATH)
     debug = config['runtime']['debug']
-    unique_id = get_mac()
 
     if config:
-        moisture_pin, temp_humid_pin = setup(config)
+        moisture_pin, temp_humid_pin = setup()
         sleep_time = config['runtime']['sleep_time_sec']
 
         while True:
             start_time = time()
-            run(config, unique_id, moisture_pin, temp_humid_pin)
+            run(moisture_pin, temp_humid_pin)
             elapsed_time = time() - start_time
             new_sleep_time = sleep_time - elapsed_time
 
