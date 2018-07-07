@@ -7,3 +7,4 @@ node-red-contrib-play-audio
 
 lat: 33.8509120
 lon: -84.3674710
+api_key: a805bebf638a064c

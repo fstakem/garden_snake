@@ -18,7 +18,7 @@ services:
     ports:
       - 1880:1880
     volumes:
-      - nodered_data:/var/lib/nodered/data
+      - nodered_data:/data
     networks:
       - front_net
       - back_net

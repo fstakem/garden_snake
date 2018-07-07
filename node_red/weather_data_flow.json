@@ -1,15 +1,15 @@
 [
     {
-        "id": "7d50f383.536964",
+        "id": "7e0c782c.ea6d58",
         "type": "tab",
         "label": "Weather Data",
         "disabled": false,
         "info": ""
     },
     {
-        "id": "50b0e808.80463",
+        "id": "2c1b61ec.250386",
         "type": "debug",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "weather data debug",
         "active": true,
         "tosidebar": true,
@@ -21,9 +21,9 @@
         "wires": []
     },
     {
-        "id": "5fd0c17d.ff81c",
+        "id": "4e325d49.3d23ac",
         "type": "wunderground",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "",
         "lon": "-84.3674710",
         "lat": "33.8509120",
@@ -33,15 +33,15 @@
         "y": 120,
         "wires": [
             [
-                "50b0e808.80463",
-                "d866ffc.f9d958"
+                "2c1b61ec.250386",
+                "1535b23e.a5b7e6"
             ]
         ]
     },
     {
-        "id": "55f85439.b4ea8c",
+        "id": "4788e0d8.1a6198",
         "type": "comment",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "General Weather Pipeline",
         "info": "",
         "x": 150,
@@ -49,9 +49,9 @@
         "wires": []
     },
     {
-        "id": "3750e94f.bff5c6",
+        "id": "d5b220e6.cec21",
         "type": "inject",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "5 min interval",
         "topic": "",
         "payload": "",
@@ -64,14 +64,14 @@
         "y": 120,
         "wires": [
             [
-                "5fd0c17d.ff81c"
+                "4e325d49.3d23ac"
             ]
         ]
     },
     {
-        "id": "d866ffc.f9d958",
+        "id": "1535b23e.a5b7e6",
         "type": "function",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "create sample insert",
         "func": "let new_data = {};\nnew_data.payload = msg.payload;\nnew_data.location = msg.location;\n//new_data.data = msg.data;\n//new_data.current = msg.data.current_observation;\nlet timestamp = JSON.stringify(msg.time).slice(1, -2);\nnode.log(\"Parsed timestamp: \" + timestamp);\nlet valueStr = JSON.stringify(new_data).replace(/\"\"/g,'\\\"');\n\nlet insert = `insert into sample(collector_id, timestamp, data) values (4, to_timestamp('${timestamp}', 'yyyy-mm-ddThh24:mi:ss.ms'), '${valueStr}')`;\nmsg.payload = insert;\n\nnode.log(\"Query: \" + insert)\nreturn msg;",
         "outputs": 1,
@@ -80,8 +80,8 @@
         "y": 120,
         "wires": [
             [
-                "cec4edce.ae6788",
-                "e114ee48.679918"
+                "d1dac97d.e1c588",
+                "1b4b87eb.b6c0f"
             ]
         ],
         "inputLabels": [
@@ -92,9 +92,9 @@
         ]
     },
     {
-        "id": "cec4edce.ae6788",
+        "id": "d1dac97d.e1c588",
         "type": "debug",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "insert debug",
         "active": true,
         "tosidebar": true,
@@ -106,10 +106,10 @@
         "wires": []
     },
     {
-        "id": "e114ee48.679918",
+        "id": "1b4b87eb.b6c0f",
         "type": "postgres",
-        "z": "7d50f383.536964",
-        "postgresdb": "e5a43c00.b2aa9",
+        "z": "7e0c782c.ea6d58",
+        "postgresdb": "352c769.67a628a",
         "name": "insert sample",
         "output": true,
         "outputs": 1,
@@ -117,14 +117,14 @@
         "y": 120,
         "wires": [
             [
-                "26a6fd6a.c246e2"
+                "8bc74eb8.5899a8"
             ]
         ]
     },
     {
-        "id": "26a6fd6a.c246e2",
+        "id": "8bc74eb8.5899a8",
         "type": "debug",
-        "z": "7d50f383.536964",
+        "z": "7e0c782c.ea6d58",
         "name": "db insert debug",
         "active": true,
         "tosidebar": true,
@@ -136,7 +136,7 @@
         "wires": []
     },
     {
-        "id": "e5a43c00.b2aa9",
+        "id": "352c769.67a628a",
         "type": "postgresdb",
         "z": "",
         "hostname": "db",

@@ -38,8 +38,8 @@ from edge_agent.db.models.sensor_model import SensorModel
 
 # Helper functions
 def load_fixtures(fixture_path):
-    with open('data.json') as f:
-        data = json.load(fixture_path)
+    with open(fixture_path) as f:
+        data = json.load(f)
 
     models = {}
 

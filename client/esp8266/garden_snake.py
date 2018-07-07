@@ -17,11 +17,11 @@ import ntptime
 
 
 # Globals
-# ======================| START |======================|
-CONFIG_PATH = '/config.json'
-CMD_MSG_RCVD = False
-config = load_config(CONFIG_PATH)
-# ======================| END |======================|
+# ======================| DECLARATION START |======================|
+CONFIG_PATH = None
+CMD_MSG_RCVD = None
+config = None
+# ======================| DECLARATION END |======================|
 
 
 def load_config(path):
@@ -41,12 +41,14 @@ def load_config(path):
 
     return config
 
+
 def save_config(config, path):
     try:
         with open(path, "w") as f:
             f.write(json.dumps(config))
     except OSError:
         print("Couldn't save " + path)
+
 
 def connect_wifi(name, passwd):
     sta_if = network.WLAN(network.STA_IF)
@@ -68,22 +70,21 @@ def connect_wifi(name, passwd):
 
     print('Connected with config:', sta_if.ifconfig())
 
+
 def get_mac():
-    mac = hexlify(network.WLAN().config('mac'),':').decode()
-    
+    mac = hexlify(network.WLAN().config('mac'), ':').decode()
+
     return mac
 
-def mqtt_connect(ip):
-    client = MQTTClient(config['board']['id'], config['mqtt']['ip'])
+
+def mqtt_connect():
+    board_id = config['board']['id']
+    ip = config['mqtt']['ip']
+    client = MQTTClient(board_id, ip)
     client.connect()
 
     return client
 
-def setup(moisture_pin_num, temp_humid_pin_num):
-    moisture_pin = ADC(moisture_pin_num)
-    temp_humid_pin = DHT22(Pin(temp_humid_pin_num))
-
-    return (moisture_pin, temp_humid_pin)
 
 def get_moisture_data(moisture_pin):
     moisture_reading = moisture_pin.read()
@@ -93,13 +94,15 @@ def get_moisture_data(moisture_pin):
 
     return pct_dry
 
+
 def get_temp_humid_data(temp_humid_pin):
     temp_humid_pin.measure()
-    temp_c = temp_humid_pin.temperature() # eg. 23 (°C)
-    temp_f = temp_c * 1.8 + 32 
-    humid = temp_humid_pin.humidity()    # eg. 41 (% RH)
+    temp_c = temp_humid_pin.temperature()
+    temp_f = temp_c * 1.8 + 32
+    humid = temp_humid_pin.humidity()
 
     return (temp_f, humid)
+
 
 def get_timestamp(update=False):
     if update:
@@ -109,6 +112,7 @@ def get_timestamp(update=False):
     timestamp_str = '{}-{}-{}T{}:{}:{}Z'.format(ts[0], ts[1], ts[2], ts[3], ts[4], ts[5])
 
     return timestamp_str
+
 
 def create_msg(pct_dry, temp, humid):
     """
@@ -136,35 +140,35 @@ def create_msg(pct_dry, temp, humid):
     }
     """
     msg = {}
-    msg['board_id'] = config['board']['id']
-    msg['timestamp'] = get_timestamp(True)
-    msg['sensors'] = []
+    msg["board_id"] = config["board"]["id"]
+    msg["timestamp"] = get_timestamp(True)
+    msg["sensors"] = []
 
     sensor = {}
-    sensor['sensor_id'] = config['sensors']['soil']['id']
-    sensor['value'] = pct_dry
-    sensor['type'] = 'percent_dry'
-    msg['sensors'].append(sensor)
+    sensor["sensor_id"] = config["sensors"]["soil"]["id"]
+    sensor["value"] = pct_dry
+    sensor["type"] = "percent_dry"
+    msg["sensors"].append(sensor)
 
     sensor = {}
-    sensor['sensor_id'] = config['sensors']['temp']['id']
-    sensor['value'] = temp
-    sensor['type'] = 'temperature'
-    msg['sensors'].append(sensor)
+    sensor["sensor_id"] = config["sensors"]["temp"]["id"]
+    sensor["value"] = temp
+    sensor["type"] = "temperature"
+    msg["sensors"].append(sensor)
 
     sensor = {}
-    sensor['sensor_id'] = config['sensors']['humid']['id']
-    sensor['value'] = humid
-    sensor['type'] = 'humidity'
-    msg['sensors'].append(sensor)
+    sensor["sensor_id"] = config["sensors"]["humid"]["id"]
+    sensor["value"] = humid
+    sensor["type"] = "humidity"
+    msg["sensors"].append(sensor)
 
-    msg_bytes = bytes(str(msg), 'utf-8')
+    return bytes(json.dumps(msg), 'utf-8')
 
-    return msg_bytes
 
 def handle_msg(topic, msg):
-    CMD_MSG_RCVD = False
-    print(topic, msg)
+    if config['runtime']['debug']:
+        print(topic, msg)
+
 
 def setup():
     # wifi
@@ -179,8 +183,16 @@ def setup():
 
     return (moisture_pin, temp_humid_pin)
 
+
 def run(moisture_pin, temp_humid_pin):
+    debug = config['runtime']['debug']
+
+    if debug:
+        print('Running....')
     mqtt_enabled = config['mqtt']['enabled']
+
+    if debug:
+        print('Mqtt enabled: {}'.format(mqtt_enabled))
 
     if mqtt_enabled:
         data_topic = bytes(config['mqtt']['data_topic'], 'utf-8')
@@ -193,10 +205,14 @@ def run(moisture_pin, temp_humid_pin):
         pct_dry = get_moisture_data(moisture_pin)
         temp, humid = get_temp_humid_data(temp_humid_pin)
         msg = create_msg(pct_dry, temp, humid)
-        print(msg)
+
+        if debug:
+            print(msg)
 
         if mqtt_enabled:
-            print('Publishing...')
+            if debug:
+                print('Publishing mqtt msg...')
+
             client = mqtt_connect()
             client.set_callback(handle_msg)
             client.subscribe(cmd_topic)
@@ -212,22 +228,34 @@ def run(moisture_pin, temp_humid_pin):
 
                 if seconds_waited > wait_time_sec or wait_time_sec == 0:
                     break
-                    
-                print('Looking for command msg')
+
+                if debug:
+                    print('Looking for mqtt command msg')
+
                 client.check_msg()
 
                 if CMD_MSG_RCVD:
                     break
 
                 sleep(1)
-        
+
     except OSError:
-        print('Reading error')
+        print('OS error publishing/subscribing msg')
     except MQTTException:
-        print('Mqtt error')
+        print('Mqtt error publishing/subscribing msg')
 
     if client:
         client.disconnect()
+
+
+
+# Globals
+# ======================| START |======================|
+CONFIG_PATH = '/config.json'
+CMD_MSG_RCVD = False
+config = load_config(CONFIG_PATH)
+# ======================| END |======================|
+
 
 def main():
     if machine.reset_cause() == machine.DEEPSLEEP_RESET:
@@ -246,9 +274,9 @@ def main():
             new_sleep_time = sleep_time - elapsed_time
 
             if debug:
-                print('Debug...')
+                print('Debug mode sleep time: {}'.format(sleep_time))
                 if elapsed_time < sleep_time:
-                    sleep(new_sleep_time)     
+                    sleep(new_sleep_time)
             else:
                 rtc = machine.RTC()
                 rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
@@ -256,7 +284,3 @@ def main():
                 rtc.alarm(rtc.ALARM0, sleep_time_ms)
                 machine.deepsleep()
 
-                   
-
-
-    
