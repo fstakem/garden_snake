@@ -192,8 +192,8 @@ def handle_msg(topic, msg):
 
 def setup():
     # wifi
-    name = config['board']['moisture_pin_num']
-    passwd = config['board']['moisture_pin_num']
+    name = config['wifi']['name']
+    passwd = config['wifi']['password']
     connect_wifi(name, passwd)
 
     # sensors
@@ -276,8 +276,21 @@ CMD_MSG_RCVD = False
 config = load_config(CONFIG_PATH)
 # ======================| END |======================|
 
-
 def main():
+    moisture_pin, temp_humid_pin = setup()
+    sleep_time = config['runtime']['sleep_time_sec']
+
+    while True:
+        start_time = time()
+        run(moisture_pin, temp_humid_pin)
+        elapsed_time = time() - start_time
+        new_sleep_time = sleep_time - elapsed_time
+
+        if new_sleep_time > 0:
+            sleep(new_sleep_time)
+
+
+def deep_main():
     if machine.reset_cause() == machine.DEEPSLEEP_RESET:
         print('Woke from a deep sleep...')
 

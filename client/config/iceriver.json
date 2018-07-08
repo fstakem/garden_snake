@@ -1,7 +1,7 @@
 {
     "wifi": {
-        "name": "",
-        "password": ""
+        "name": "frugmunster",
+        "password": "*****"
     },
     "sensors": {
         "soil": {
@@ -19,7 +19,7 @@
     "mqtt": {
         "enabled": true,
         "tag": "garden",
-        "ip": "192.168.2.155",
+        "ip": "192.168.2.222",
         "data_topic": "garden/data",
         "cmd_topic": "garden/cmd",
         "wait_time_sec": 2
@@ -30,7 +30,7 @@
         "temp_humid_pin_num": 5
     },
     "runtime": {
-        "debug": true,
-        "sleep_time_sec": 10
+        "debug": false,
+        "sleep_time_sec": 300
     }
 }
