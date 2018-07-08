@@ -13,7 +13,6 @@ ENV USER=edge_agent \
 
 # Setup box
 RUN mkdir -p $SETUP_PATH
-COPY ./install_scripts/ $SETUP_PATH
 COPY ./requirements.txt $SETUP_PATH
 COPY ./edge_agent/ $SERVER_APP_PATH
 
