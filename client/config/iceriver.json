@@ -6,7 +6,7 @@
     "sensors": {
         "soil": {
             "id": "48fd5cee-eca2-49f8-9f1e-ca0e9283d4aa",
-            "min_moisture": 400,
+            "min_moisture": 388,
             "max_moisture": 778
         },
         "temp": {

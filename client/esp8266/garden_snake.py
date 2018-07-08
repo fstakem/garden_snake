@@ -92,16 +92,34 @@ def get_moisture_data(moisture_pin):
     reading_range = config['sensors']['soil']['diff_moisture']
     pct_dry = ((moisture_reading - min_reading) / reading_range) * 100
 
+    if pct_dry > 100:
+        pct_dry = 100
+    elif pct_dry < 0:
+        pct_dry = 0
+
     return pct_dry
 
 
 def get_temp_humid_data(temp_humid_pin):
-    temp_humid_pin.measure()
-    temp_c = temp_humid_pin.temperature()
-    temp_f = temp_c * 1.8 + 32
-    humid = temp_humid_pin.humidity()
+    retry = 0
 
-    return (temp_f, humid)
+    while retry < 3:
+        try:
+            temp_humid_pin.measure()
+            temp_c = temp_humid_pin.temperature()
+            temp_f = temp_c * 1.8 + 32
+            humid = temp_humid_pin.humidity()
+
+            return (temp_f, humid)
+        except Exception as e:
+            retry = retry + 1
+
+            if config['runtime']['debug']:
+                print("DHT measuring error")
+
+            sleep(5)
+
+    return (0, 0)
 
 
 def get_timestamp(update=False):
@@ -166,6 +184,8 @@ def create_msg(pct_dry, temp, humid):
 
 
 def handle_msg(topic, msg):
+    CMD_MSG_RCVD = False
+
     if config['runtime']['debug']:
         print(topic, msg)
 
@@ -283,4 +303,3 @@ def main():
                 sleep_time_ms = 1000 * new_sleep_time
                 rtc.alarm(rtc.ALARM0, sleep_time_ms)
                 machine.deepsleep()
-
