@@ -59,3 +59,10 @@ Setup for Ubuntu
   * > In ipython set path: fixture_path = '/home/fstakem/garden_snake/edge_agent/edge_agent/fixtures/garden_6_30_18.json'
   * > In ipython run function: load_fixtures(fixture_path)
   * quit() (to leave ipython)
+4. Setup nodered
+  * Navigate to web UI: http://king-cobra.local:1880/
+  * Install components: node-red-contrib-postgres, node-red-node-weather-underground
+  * Import both flows
+  * Configure: wunderground -> api key
+  * Configure both postgres passwords -> user and password
+  * Deploy
