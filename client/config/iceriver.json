@@ -1,36 +1,36 @@
 {
     "wifi": {
-        "name": "",
-        "password": ""
+        "name": "frugmunster",
+        "password": "*****"
     },
     "sensors": {
         "soil": {
-            "id": "",
-            "min_moisture": 400,
+            "id": "48fd5cee-eca2-49f8-9f1e-ca0e9283d4aa",
+            "min_moisture": 388,
             "max_moisture": 778
         },
         "temp": {
-            "id": ""
+            "id": "eba61d5f-e29e-416a-a207-bf21f1af5b04"
         },
         "humid": {
-            "id": ""
+            "id": "8aca7265-fe77-4cbc-af7f-481ebb39a283"
         }
     },
     "mqtt": {
         "enabled": true,
         "tag": "garden",
-        "ip": "192.168.2.118",
+        "ip": "192.168.2.222",
         "data_topic": "garden/data",
         "cmd_topic": "garden/cmd",
         "wait_time_sec": 2
     },
     "board": {
-        "id": "",
+        "id": "595d552f-397e-4119-990b-252068f8ff80",
         "moisture_pin_num": 0,
         "temp_humid_pin_num": 5
     },
     "runtime": {
-        "debug": true,
-        "sleep_time_sec": 10
+        "debug": false,
+        "sleep_time_sec": 300
     }
 }

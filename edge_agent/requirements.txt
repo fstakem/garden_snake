@@ -1,0 +1,14 @@
+ipython
+ipdb
+pytest
+
+psycopg2
+sqlalchemy
+SQLAlchemy-Utils
+alembic
+flask
+Flask-SQLAlchemy
+Flask-RESTful
+Flask-WTF
+flask-marshmallow
+marshmallow-sqlalchemy
